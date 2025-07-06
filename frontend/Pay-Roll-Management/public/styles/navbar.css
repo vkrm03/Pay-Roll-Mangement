@@ -49,15 +49,16 @@
 
 .navbar-links li a:hover,
 .navbar-links li button:hover {
-  color: #f472b6;
+  color: #60a5fa;
 }
 
 .navbar-links li .active {
-  border-bottom: 2px solid #f472b6;
+  border-bottom: 2px solid #1d4ed8;
   padding-bottom: 0.25rem;
   color: #ffffff;
   font-weight: 600;
 }
+
 
 .navbar-toggle {
   display: none;
@@ -66,7 +67,6 @@
   cursor: pointer;
 }
 
-/* Mobile View */
 @media screen and (max-width: 768px) {
   .navbar-links {
     position: absolute;
