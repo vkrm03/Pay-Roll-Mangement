@@ -4,7 +4,7 @@ import '../../public/styles/auth.css';
 
 const Login = () => {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ username: '', password: '' });
+  const [form, setForm] = useState({ username: '', password: '', role: '' });
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
@@ -14,11 +14,11 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!form.username || !form.password) {
+    if (!form.username || !form.password || !form.role) {
       setError('Please fill in all fields');
     } else {
       setError('');
-      console.log('Form Data:', form);
+      console.log('Login Form Data:', form);
     }
   };
 
@@ -28,6 +28,19 @@ const Login = () => {
         <h2>Login</h2>
 
         {error && <p className="error-msg">{error}</p>}
+
+        <select
+          name="role"
+          value={form.role}
+          onChange={handleChange}
+          required
+        >
+          <option value="">Select Role</option>
+          <option value="admin">Admin</option>
+          <option value="hr">HR</option>
+          <option value="employee">Employee</option>
+          <option value="finance">Finance</option>
+        </select>
 
         <input
           type="text"
@@ -48,6 +61,7 @@ const Login = () => {
         />
 
         <button type="submit">Login</button>
+
         <p className="login-hint">
           <a href="/forgot-password" className="forgot-link">Forgot Password?</a>
         </p>

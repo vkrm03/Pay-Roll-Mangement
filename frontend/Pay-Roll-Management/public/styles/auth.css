@@ -16,6 +16,24 @@
   text-align: center;
 }
 
+.login-form select {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 1rem;
+  outline: none;
+  background-color: #ffffff;
+  transition: border-color 0.3s;
+  color: #111827;
+}
+
+.login-form select:focus {
+  border-color: #3b82f6;
+}
+
+
 .login-form h2 {
   margin-bottom: 1.5rem;
   font-size: 1.8rem;
