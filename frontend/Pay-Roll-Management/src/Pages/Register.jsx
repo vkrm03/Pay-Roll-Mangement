@@ -4,7 +4,14 @@ import '../../public/styles/auth.css';
 
 const Register = () => {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ username: '', email: '', password: '', confirmPassword: '' });
+  const [form, setForm] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    role: '',
+  });
+
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
@@ -14,7 +21,7 @@ const Register = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!form.username || !form.email || !form.password || !form.confirmPassword) {
+    if (!form.username || !form.email || !form.password || !form.confirmPassword || !form.role) {
       setError('Please fill in all fields');
     } else if (form.password !== form.confirmPassword) {
       setError('Passwords do not match');
@@ -30,6 +37,13 @@ const Register = () => {
         <h2>Register</h2>
 
         {error && <p className="error-msg">{error}</p>}
+
+                <select name="role" value={form.role} onChange={handleChange} required>
+          <option value="">Select Role</option>
+          <option value="employee">Employee</option>
+          <option value="admin">Admin</option>
+          <option value="hr">HR</option>
+        </select>
 
         <input
           type="text"
