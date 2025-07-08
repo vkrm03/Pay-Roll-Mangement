@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import '../../public/styles/auth.css';
 
 const Login = () => {
@@ -63,7 +63,7 @@ const Login = () => {
         <button type="submit">Login</button>
 
         <p className="login-hint">
-          <a href="/forgot-password" className="forgot-link">Forgot Password?</a>
+          <Link to="/forgot-password" className="forgot-link">Forgot Password?</Link>
         </p>
       </form>
     </div>

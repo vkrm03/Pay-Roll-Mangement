@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import '../../public/styles/auth.css';
 
 const Register = () => {
@@ -38,7 +38,7 @@ const Register = () => {
 
         {error && <p className="error-msg">{error}</p>}
 
-                <select name="role" value={form.role} onChange={handleChange} required>
+        <select name="role" value={form.role} onChange={handleChange} required>
           <option value="">Select Role</option>
           <option value="employee">Employee</option>
           <option value="admin">Admin</option>
@@ -83,7 +83,8 @@ const Register = () => {
 
         <button type="submit">Register</button>
         <p className="login-hint">
-          Already have an account? <a href="/login" className="forgot-link">Login</a>
+          Already have an account?{' '}
+          <Link to="/login" className="forgot-link">Login</Link>
         </p>
       </form>
     </div>

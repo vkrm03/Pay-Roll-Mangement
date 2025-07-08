@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import '../../public/styles/auth.css';
 
 const ForgotPassword = () => {
@@ -31,16 +32,16 @@ const ForgotPassword = () => {
             <button type="submit">Send Reset Link</button>
 
             <p className="login-hint">
-              <a href="/login" className="forgot-link">Back to Login</a>
+              <Link to="/login" className="forgot-link">Back to Login</Link>
             </p>
           </>
         ) : (
           <>
             <p className="login-hint">
-              A password reset link has been sent to your email ✅
+              A password reset link has been sent to your email !!
             </p>
             <p className="login-hint">
-              <a href="/login" className="forgot-link">Back to Login</a>
+              <Link to="/login" className="forgot-link">Back to Login</Link>
             </p>
           </>
         )}
