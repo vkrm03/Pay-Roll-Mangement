@@ -21,7 +21,7 @@ mongoose.connect('mongodb://localhost:27017/payroll_app', {
 
 app.post('/api/register', async (req, res) => {
   const { username, email, password, role } = req.body;
-  
+
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ msg: "User already exists" });
@@ -54,5 +54,19 @@ app.post('/api/login', async (req, res) => {
     res.status(500).json({ msg: "Server error during login" });
   }
 });
+
+app.post('/api/forgot-password', async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return res.status(404).json({ msg: 'User with this email does not exist' });
+  }
+
+  console.log(`Reset link sent to: ${email}`);
+
+  res.status(200).json({ msg: 'Password reset link sent to your email' });
+});
+
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

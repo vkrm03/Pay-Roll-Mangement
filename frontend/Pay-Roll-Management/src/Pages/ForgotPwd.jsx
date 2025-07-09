@@ -1,17 +1,29 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import api from '../../public/api';
 import '../../public/styles/auth.css';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
-  const handleReset = (e) => {
+  const handleReset = async (e) => {
     e.preventDefault();
 
-    if (!email) return;
-    setSubmitted(true);
-    console.log("Password reset link sent to:", email);
+    if (!email) {
+      toast.error('Email is required');
+      return;
+    }
+
+    try {
+      await axios.post(`${api}forgot-password`, { email });
+      toast.success('Password reset link sent!');
+      setSubmitted(true);
+    } catch (err) {
+      toast.error(err.response?.data?.msg || 'Something went wrong');
+    }
   };
 
   return (
