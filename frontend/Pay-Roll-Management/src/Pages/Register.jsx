@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
 import '../../public/styles/auth.css';
 
 const Register = () => {
@@ -11,23 +12,28 @@ const Register = () => {
     confirmPassword: '',
     role: '',
   });
-
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const { username, email, password, confirmPassword, role } = form;
 
-    if (!form.username || !form.email || !form.password || !form.confirmPassword || !form.role) {
-      setError('Please fill in all fields');
-    } else if (form.password !== form.confirmPassword) {
-      setError('Passwords do not match');
-    } else {
-      setError('');
-      console.log('Register Form Data:', form);
+    if (!username || !email || !password || !confirmPassword || !role) {
+      return setError('Please fill in all fields');
+    }
+    if (password !== confirmPassword) {
+      return setError('Passwords do not match');
+    }
+
+    try {
+      await axios.post('http://localhost:5000/api/register', { username, email, password, role });
+      navigate('/login');
+    } catch (err) {
+      setError(err.response?.data?.msg || 'Something went wrong');
     }
   };
 
@@ -35,7 +41,6 @@ const Register = () => {
     <div className="login-container">
       <form className="login-form" onSubmit={handleSubmit}>
         <h2>Register</h2>
-
         {error && <p className="error-msg">{error}</p>}
 
         <select name="role" value={form.role} onChange={handleChange} required>
@@ -45,46 +50,14 @@ const Register = () => {
           <option value="hr">HR</option>
         </select>
 
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          value={form.username}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          type="password"
-          name="confirmPassword"
-          placeholder="Confirm Password"
-          value={form.confirmPassword}
-          onChange={handleChange}
-          required
-        />
+        <input type="text" name="username" placeholder="Username" value={form.username} onChange={handleChange} required />
+        <input type="email" name="email" placeholder="Email" value={form.email} onChange={handleChange} required />
+        <input type="password" name="password" placeholder="Password" value={form.password} onChange={handleChange} required />
+        <input type="password" name="confirmPassword" placeholder="Confirm Password" value={form.confirmPassword} onChange={handleChange} required />
 
         <button type="submit">Register</button>
         <p className="login-hint">
-          Already have an account?{' '}
-          <Link to="/login" className="forgot-link">Login</Link>
+          Already have an account? <Link to="/login" className="forgot-link">Login</Link>
         </p>
       </form>
     </div>
