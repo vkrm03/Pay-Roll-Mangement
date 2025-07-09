@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import api from '../../public/api';
 import '../../public/styles/auth.css';
 
 const Register = () => {
@@ -30,7 +31,7 @@ const Register = () => {
     }
 
     try {
-      await axios.post('http://localhost:5000/api/register', { username, email, password, role });
+      await axios.post(`${api}register`, { username, email, password, role });
       navigate('/login');
     } catch (err) {
       setError(err.response?.data?.msg || 'Something went wrong');
