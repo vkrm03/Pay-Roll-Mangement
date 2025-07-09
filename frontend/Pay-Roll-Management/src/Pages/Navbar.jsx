@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import "../../public/styles/navbar.css"
 
 const Navbar = () => {
@@ -18,13 +20,13 @@ const Navbar = () => {
 
     syncUser();
     window.addEventListener('userChanged', syncUser);
-
     return () => window.removeEventListener('userChanged', syncUser);
   }, []);
 
   const handleLogout = () => {
     localStorage.clear();
     window.dispatchEvent(new Event("userChanged"));
+    toast.success("Logged out successfully!");
     navigate('/');
   };
 
@@ -46,7 +48,7 @@ const Navbar = () => {
             <>
               <li>
                 <NavLink to={localStorage.getItem('admin') === 'true' ? '/admin' : '/user'}>
-                 Hi, {localStorage.getItem('admin') === 'true' ? 'Admin' : user.split(' ')[0]}
+                  Hi, {localStorage.getItem('admin') === 'true' ? 'Admin' : user.split(' ')[0]}
                 </NavLink>
               </li>
               <li>
