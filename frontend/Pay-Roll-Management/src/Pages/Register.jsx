@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import api from '../../public/api';
+import { toast } from 'react-toastify';
 import '../../public/styles/auth.css';
 
 const Register = () => {
@@ -20,23 +21,26 @@ const Register = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const { username, email, password, confirmPassword, role } = form;
+  e.preventDefault();
+  const { username, email, password, confirmPassword, role } = form;
 
-    if (!username || !email || !password || !confirmPassword || !role) {
-      return setError('Please fill in all fields');
-    }
-    if (password !== confirmPassword) {
-      return setError('Passwords do not match');
-    }
+  if (!username || !email || !password || !confirmPassword || !role) {
+    return setError('Please fill in all fields');
+  }
+  if (password !== confirmPassword) {
+    return setError('Passwords do not match');
+  }
 
-    try {
-      await axios.post(`${api}register`, { username, email, password, role });
-      navigate('/login');
-    } catch (err) {
-      setError(err.response?.data?.msg || 'Something went wrong');
-    }
-  };
+  try {
+    await axios.post(`${api}register`, { username, email, password, role });
+    toast.success('Registered successfully!');
+    navigate('/login');
+  } catch (err) {
+    toast.error(err.response?.data?.msg || 'Something went wrong');
+    setError(err.response?.data?.msg || 'Something went wrong');
+  }
+};
+
 
   return (
     <div className="login-container">

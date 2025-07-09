@@ -46,7 +46,7 @@ const Navbar = () => {
             <>
               <li>
                 <NavLink to={localStorage.getItem('admin') === 'true' ? '/admin' : '/user'}>
-                  👤 Hi, {localStorage.getItem('admin') === 'true' ? 'Admin' : user.split(' ')[0]}
+                 Hi, {localStorage.getItem('admin') === 'true' ? 'Admin' : user.split(' ')[0]}
                 </NavLink>
               </li>
               <li>
