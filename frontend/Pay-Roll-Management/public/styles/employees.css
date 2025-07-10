@@ -1,0 +1,156 @@
+.employees-container {
+  padding: 2rem;
+  background-color: #f9fbfe;
+  border-radius: 12px;
+  max-width: 1200px;
+  margin: 2rem auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  position: relative;
+}
+
+.employees-container h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  color: #2d3748;
+}
+
+/* Floating Add Button */
+.add-btn {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  background-color: #2f80ed;
+  color: #fff;
+  border: none;
+  padding: 12px 16px;
+  font-size: 16px;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(47,128,237,0.3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.add-btn:hover {
+  background-color: #1c63d4;
+  transform: translateY(-2px);
+}
+
+/* Modal Popup */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal {
+  background-color: #fff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  width: 650px;
+  max-width: 90%;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  animation: popin 0.25s ease;
+}
+
+@keyframes popin {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.employee-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.employee-form input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.modal-actions {
+  grid-column: span 2;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+
+.modal-actions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.modal-actions button[type="submit"] {
+  background-color: #2f80ed;
+  color: white;
+}
+
+.modal-actions button[type="submit"]:hover {
+  background-color: #1c63d4;
+}
+
+.modal-actions button[type="button"] {
+  background-color: #eee;
+  color: #333;
+}
+
+.modal-actions button[type="button"]:hover {
+  background-color: #ddd;
+}
+
+.employee-table table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 2rem;
+}
+
+.employee-table th,
+.employee-table td {
+  border: 1px solid #f0f0f0;
+  padding: 12px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.employee-table th {
+  background-color: #2f80ed;
+  color: white;
+  font-weight: 600;
+}
+
+.edit-btn,
+.delete-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.edit-btn:hover {
+  color: #1c63d4;
+}
+
+.delete-btn:hover {
+  color: red;
+}
+    

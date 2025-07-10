@@ -3,7 +3,8 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('./models/User'); // ✅ IMPORTANT: import model
+const User = require('./models/User');
+const Employee = require('./models/Employee');
 
 const app = express();
 const PORT = 5000;
@@ -19,9 +20,9 @@ mongoose.connect('mongodb://localhost:27017/payroll_app', {
 .then(() => console.log("MongoDB Connected"))
 .catch(err => console.log("MongoDB Error:", err));
 
+
 app.post('/api/register', async (req, res) => {
   const { username, email, password, role } = req.body;
-
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ msg: "User already exists" });
@@ -63,10 +64,50 @@ app.post('/api/forgot-password', async (req, res) => {
     return res.status(404).json({ msg: 'User with this email does not exist' });
   }
 
-  console.log(`Reset link sent to: ${email}`);
-
+  console.log(`🔗 Reset link sent to: ${email}`);
   res.status(200).json({ msg: 'Password reset link sent to your email' });
 });
 
+app.post('/api/employees/add', async (req, res) => {
+  try {
+    const newEmp = new Employee(req.body);
+    await newEmp.save();
+    res.status(201).json({ msg: "Employee added", newEmp });
+  } catch (err) {
+    console.error("Add Employee error:", err);
+    res.status(500).json({ msg: "Error adding employee" });
+  }
+});
 
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.get('/api/employees', async (req, res) => {
+  try {
+    const all = await Employee.find();
+    console.log("get works form employees");    
+    res.status(200).json(all);
+  } catch (err) {
+    console.error("Get Employees error:", err);
+    res.status(500).json({ msg: "Error fetching employees" });
+  }
+});
+
+app.put('/api/employees/update/:id', async (req, res) => {
+  try {
+    const updated = await Employee.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.status(200).json({ msg: "Employee updated", updated });
+  } catch (err) {
+    console.error("Update error:", err);
+    res.status(500).json({ msg: "Error updating employee" });
+  }
+});
+
+app.delete('/api/employees/delete/:id', async (req, res) => {
+  try {
+    await Employee.findByIdAndDelete(req.params.id);
+    res.status(200).json({ msg: "Employee deleted" });
+  } catch (err) {
+    console.error("Delete error:", err);
+    res.status(500).json({ msg: "Error deleting employee" });
+  }
+});
+
+app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));

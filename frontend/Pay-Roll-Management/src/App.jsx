@@ -6,6 +6,7 @@ import Login from './Pages/Login';
 import Register from './Pages/Register';
 import ForgotPassword from './Pages/ForgotPwd';
 import Dashboard from './Pages/Dashboard';
+import Employees from './Pages/Employees';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -18,6 +19,7 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/employees" element={<Employees />} />
       </Routes>
       <ToastContainer position="top-center" autoClose={1000} />
     </>
