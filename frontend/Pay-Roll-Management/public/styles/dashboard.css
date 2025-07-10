@@ -106,3 +106,75 @@
 .chart-section {
   margin-top: 2rem;
 }
+
+
+
+
+@media (max-width: 1024px) {
+  .dashboard {
+    padding: 1.5rem 1rem;
+  }
+
+  .payrun-info {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .payrun-info > div {
+    flex: 1 1 100%;
+  }
+
+  .payrun-info button {
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  .kpi-cards {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .kpi-card {
+    flex: 1 1 45%;
+  }
+
+  .tasks-section ul {
+    padding: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard {
+    padding: 1rem;
+  }
+
+  .payrun-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .payrun-info > div,
+  .payrun-info button {
+    width: 100%;
+  }
+
+  .kpi-card {
+    flex: 1 1 100%;
+    text-align: left;
+  }
+
+  .tasks-section li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .chart-section h3 {
+    font-size: 1.1rem;
+  }
+
+  canvas {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+}
