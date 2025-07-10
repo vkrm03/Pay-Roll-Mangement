@@ -38,7 +38,7 @@ const Navbar = () => {
         </NavLink>
 
         <ul className={`navbar-links ${isOpen ? 'active' : ''}`}>
-          <li><NavLink to="/" onClick={toggleMenu}>Dashboard</NavLink></li>
+          <li><NavLink to="/dashboard" onClick={toggleMenu}>Dashboard</NavLink></li>
           <li><NavLink to="/employees" onClick={toggleMenu}>Employees</NavLink></li>
           <li><NavLink to="/payroll" onClick={toggleMenu}>Payroll</NavLink></li>
           <li><NavLink to="/tax" onClick={toggleMenu}>Tax</NavLink></li>

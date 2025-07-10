@@ -5,6 +5,7 @@ import Navbar from './Pages/Navbar';
 import Login from './Pages/Login';
 import Register from './Pages/Register';
 import ForgotPassword from './Pages/ForgotPwd';
+import Dashboard from './Pages/Dashboard';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -16,6 +17,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
       <ToastContainer position="top-center" autoClose={1000} />
     </>

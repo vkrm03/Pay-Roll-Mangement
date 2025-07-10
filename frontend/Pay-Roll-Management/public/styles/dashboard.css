@@ -1,0 +1,108 @@
+.dashboard {
+  padding: 2rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.payrun-banner {
+  border: 1px solid #e5e7eb;
+  padding: 1rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  background-color: #f9fafb;
+}
+
+.payrun-banner .badge {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  background-color: #facc15;
+  border-radius: 4px;
+  margin-left: 0.5rem;
+}
+
+.payrun-info {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+  align-items: center;
+}
+
+.payrun-info > div {
+  flex: 1;
+}
+
+.payrun-info button {
+  background: #111827;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.kpi-cards {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.kpi-card {
+  background: #f3f4f6;
+  padding: 1rem;
+  border-radius: 10px;
+  flex: 1 1 200px;
+  text-align: center;
+}
+
+.kpi-card h4 {
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.kpi-card p {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.kpi-card a {
+  font-size: 0.9rem;
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.tasks-section {
+  margin-bottom: 2rem;
+}
+
+.tasks-section h3 {
+  margin-bottom: 1rem;
+}
+
+.tasks-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.tasks-section li {
+  background: #fef3c7;
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tasks-section button {
+  background-color: #3b82f6;
+  border: none;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.chart-section {
+  margin-top: 2rem;
+}
