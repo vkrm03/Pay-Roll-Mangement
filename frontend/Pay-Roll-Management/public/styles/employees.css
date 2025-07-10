@@ -10,36 +10,102 @@
 
 .employees-container h2 {
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   font-size: 2rem;
   color: #2d3748;
 }
 
-/* Floating Add Button */
-.add-btn {
-  position: absolute;
-  top: 20px;
-  right: 30px;
-  background-color: #2f80ed;
-  color: #fff;
-  border: none;
-  padding: 12px 16px;
-  font-size: 16px;
-  border-radius: 50px;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(47,128,237,0.3);
-  display: flex;
+/* 🚀 Search + Add Row */
+.search-controls {
+  display: grid;
+  grid-template-columns: 1fr 2fr auto auto;
+  gap: 1rem;
   align-items: center;
-  gap: 8px;
+  margin-bottom: 1.5rem;
+  padding: 0 0.5rem;
+}
+
+.search-controls select {
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  width: 100%;
   transition: all 0.3s ease;
 }
 
-.add-btn:hover {
-  background-color: #1c63d4;
-  transform: translateY(-2px);
+.search-controls input {
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  width: 100%;
+  transition: all 0.3s ease;
 }
 
-/* Modal Popup */
+.search-controls select:focus,
+.search-controls input:focus {
+  border-color: #2f80ed;
+  box-shadow: 0 0 0 2px rgba(47, 128, 237, 0.2);
+}
+
+.search-controls .search-btn {
+  background-color: #2f80ed;
+  color: #fff;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.search-controls .search-btn:hover {
+  background-color: #1c63d4;
+  transform: translateY(-1px);
+}
+
+.search-controls .add-btn {
+  background-color: #27ae60;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  font-size: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-self: end;
+  transition: all 0.3s ease;
+}
+
+.search-controls .add-btn:hover {
+  background-color: #219653;
+  transform: translateY(-1px);
+}
+
+/* 📱 Responsive stack */
+@media (max-width: 768px) {
+  .search-controls {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .search-controls .search-btn,
+  .search-controls .add-btn {
+    justify-self: stretch;
+  }
+
+  .search-controls .add-btn {
+    grid-column: span 2;
+  }
+}
+
+/* 🧾 Modal Popup */
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -115,13 +181,14 @@
   background-color: #ddd;
 }
 
+/* 📋 Table */
 .employee-table table {
   width: 100%;
   border-collapse: collapse;
   background-color: white;
   border-radius: 8px;
   overflow: hidden;
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
 
 .employee-table th,
@@ -153,4 +220,3 @@
 .delete-btn:hover {
   color: red;
 }
-    

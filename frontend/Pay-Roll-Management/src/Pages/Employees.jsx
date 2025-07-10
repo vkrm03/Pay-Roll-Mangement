@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import api from '../../public/api';
-import '../../public/styles/employees.css'; // Style this to match modal vibe
+import '../../public/styles/employees.css';
 
 const Employees = () => {
   const [employees, setEmployees] = useState([]);
@@ -18,6 +18,13 @@ const Employees = () => {
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [searchType, setSearchType] = useState("name");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredEmployees = employees.filter(emp => {
+    const value = emp[searchType]?.toLowerCase();
+    return value?.includes(searchTerm.toLowerCase());
+  });
 
   useEffect(() => {
     fetchEmployees();
@@ -85,10 +92,33 @@ const Employees = () => {
   return (
     <div className="employees-container">
       <h2>Employee Management</h2>
-      <button className="add-btn" onClick={openAddModal}>
-        <i className="fa fa-plus"></i> Add Employee
-      </button>
 
+      {/* 🔍 Search Controls */}
+      <div className="search-controls">
+        <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
+          <option value="name">Name</option>
+          <option value="empId">Employee ID</option>
+          <option value="email">Email</option>
+          <option value="department">Department</option>
+        </select>
+
+        <input
+          type="text"
+          placeholder={`Search by ${searchType}...`}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+
+        <button className="search-btn">
+          <i className="fa fa-search"></i>
+        </button>
+
+        <button className="add-btn" onClick={openAddModal}>
+          <i className="fa fa-plus"></i> Add Employee
+        </button>
+      </div>
+
+      {/* 📋 Employees Table */}
       {loading ? (
         <p>Loading employees...</p>
       ) : (
@@ -108,7 +138,7 @@ const Employees = () => {
               </tr>
             </thead>
             <tbody>
-              {employees.map((emp) => (
+              {filteredEmployees.map((emp) => (
                 <tr key={emp._id}>
                   <td>{emp.name}</td>
                   <td>{emp.empId}</td>
@@ -134,7 +164,7 @@ const Employees = () => {
         </div>
       )}
 
-      {/* Modal Popup */}
+      {/* 🧾 Modal Form */}
       {showModal && (
         <div className="modal-backdrop">
           <div className="modal">
