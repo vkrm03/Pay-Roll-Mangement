@@ -18,6 +18,7 @@ const Employees = () => {
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [csvFile, setCsvFile] = useState(null);
   const [searchType, setSearchType] = useState("name");
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -56,20 +57,44 @@ const Employees = () => {
   };
 
   const handleAddOrUpdate = async (e) => {
-    e.preventDefault();
-    const url = editId ? `${api}employees/update/${editId}` : `${api}employees/add`;
-    const method = editId ? 'put' : 'post';
+  e.preventDefault();
+
+  if (csvFile) {
+    const formData = new FormData();
+    formData.append("file", csvFile);
 
     try {
-      await axios[method](url, form);
-      toast.success(editId ? 'Employee updated!' : 'Employee added!');
-      fetchEmployees();
-      setShowModal(false);
-      setEditId(null);
-    } catch (err) {
-      toast.error('Error saving employee');
-    }
-  };
+  const res = await axios.post(`${api}employees/bulk`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+  toast.success("Bulk employees imported!");
+  fetchEmployees();
+  setCsvFile(null);
+  setShowModal(false);
+} catch (err) {
+  if (err.response && err.response.status === 400 && err.response.data.duplicates) {
+    toast.error(`Duplicate empIds: ${err.response.data.duplicates.join(', ')}`);
+  } else {
+    toast.error("Bulk import failed");
+  }
+}
+
+    return;
+  }
+  const url = editId ? `${api}employees/update/${editId}` : `${api}employees/add`;
+  const method = editId ? 'put' : 'post';
+
+  try {
+    await axios[method](url, form);
+    toast.success(editId ? 'Employee updated!' : 'Employee added!');
+    fetchEmployees();
+    setShowModal(false);
+    setEditId(null);
+  } catch (err) {
+    toast.error('Error saving employee');
+  }
+};
+
 
   const handleEdit = (emp) => {
     setForm(emp);
@@ -93,7 +118,6 @@ const Employees = () => {
     <div className="employees-container">
       <h2>Employee Management</h2>
 
-      {/* 🔍 Search Controls */}
       <div className="search-controls">
         <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
           <option value="name">Name</option>
@@ -171,41 +195,57 @@ const Employees = () => {
       <h3>{editId ? 'Edit Employee' : 'Add New Employee'}</h3>
 
       <form className="employee-form" onSubmit={handleAddOrUpdate}>
-        <input name="name" value={form.name} onChange={handleChange} placeholder="Name" required />
-        <input name="empId" value={form.empId} onChange={handleChange} placeholder="Employee ID" required />
-        <input name="email" value={form.email} onChange={handleChange} placeholder="Email" required />
-        <input name="department" value={form.department} onChange={handleChange} placeholder="Department" required />
-        <input name="designation" value={form.designation} onChange={handleChange} placeholder="Designation" required />
-        <input type="date" name="joinDate" value={form.joinDate} onChange={handleChange} required />
-        <input name="salary" type="number" value={form.salary} onChange={handleChange} placeholder="Salary" required />
+        <input name="name" value={form.name} onChange={handleChange} placeholder="Name" required={!csvFile} />
+        <input name="empId" value={form.empId} onChange={handleChange} placeholder="Employee ID" required={!csvFile} />
+        <input name="email" value={form.email} onChange={handleChange} placeholder="Email" required={!csvFile} />
+        <input name="department" value={form.department} onChange={handleChange} placeholder="Department" required={!csvFile} />
+        <input name="designation" value={form.designation} onChange={handleChange} placeholder="Designation" required={!csvFile} />
+        <input type="date" name="joinDate" value={form.joinDate} onChange={handleChange} required={!csvFile} />
+        <input name="salary" type="number" value={form.salary} onChange={handleChange} placeholder="Salary" required={!csvFile} />
 
         <div className="bulk-import-section">
   <h4>Employees Data Bulk Import (CSV)</h4>
 
   <div
-    className="drop-zone"
-    onDragOver={(e) => e.preventDefault()}
-    onDrop={(e) => {
-      e.preventDefault();
-      const file = e.dataTransfer.files[0];
-      if (file && file.type === "text/csv") {
-        console.log("Dropped CSV file:", file);
-      } else {
-        toast.error("Only CSV files are allowed");
-      }
-    }}
-    onClick={() => document.getElementById('csv-upload').click()}
-  >
-    <p>Drag & Drop CSV here or <span className="browse-link">Browse</span></p>
-  </div>
+  className="drop-zone"
+  onDragOver={(e) => e.preventDefault()}
+  onDrop={(e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file && file.type === "text/csv") {
+      setCsvFile(file);
+      toast.success("CSV file selected");
+    } else {
+      toast.error("Only CSV files are allowed");
+    }
+  }}
+  onClick={() => document.getElementById('csv-upload').click()}
+>
+  {csvFile ? (
+    <p style={{ marginTop: '8px', fontSize: '14px', color: '#1b3353' }}>
+      Selected: <strong>{csvFile.name}</strong>
+    </p>
+  ) : (
+    <p>
+      Drag & Drop CSV here or <span className="browse-link">Browse</span>
+    </p>
+  )}
+</div>
 
-  <input
-    type="file"
-    id="csv-upload"
-    accept=".csv"
-    style={{ display: 'none' }}
-    onChange={(e) => console.log("Selected file:", e.target.files[0])}
-  />
+<input
+  type="file"
+  id="csv-upload"
+  accept=".csv"
+  style={{ display: 'none' }}
+  onChange={(e) => {
+    const file = e.target.files[0];
+    if (file && file.type === "text/csv") {
+      setCsvFile(file);
+    } else {
+      toast.error("Only CSV files are allowed");
+    }
+  }}
+/>
 
   <p className="csv-note">
     Only CSV files accepted. <a href="src\assets\sample.csv" download>Download Sample</a>
