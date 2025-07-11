@@ -21,11 +21,20 @@ const Employees = () => {
   const [csvFile, setCsvFile] = useState(null);
   const [searchType, setSearchType] = useState("name");
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortType, setSortType] = useState("");
 
-  const filteredEmployees = employees.filter(emp => {
+  const filteredEmployees = employees
+  .filter(emp => {
     const value = emp[searchType]?.toLowerCase();
     return value?.includes(searchTerm.toLowerCase());
+  })
+  .sort((a, b) => {
+    if (sortType === "salary") return b.salary - a.salary;
+    if (sortType === "name") return a.name.localeCompare(b.name);
+    if (sortType === "joinDate") return new Date(b.joinDate) - new Date(a.joinDate);
+    return 0;
   });
+
 
   useEffect(() => {
     fetchEmployees();
@@ -133,9 +142,17 @@ const Employees = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
 
-        <button className="search-btn">
-          <i className="fa fa-search"></i>
-        </button>
+        <select
+  value={sortType}
+  onChange={(e) => setSortType(e.target.value)}
+  className="sort-select"
+>
+  <option value="">Sort</option>
+  <option value="name">Name (A - Z)</option>
+  <option value="salary">Salary (High - Low)</option>
+  <option value="joinDate">Join Date (Recent - Old)</option>
+</select>
+
 
         <button className="add-btn" onClick={openAddModal}>
           <i className="fa fa-plus"></i> Add Employee
@@ -203,54 +220,57 @@ const Employees = () => {
         <input type="date" name="joinDate" value={form.joinDate} onChange={handleChange} required={!csvFile} />
         <input name="salary" type="number" value={form.salary} onChange={handleChange} placeholder="Salary" required={!csvFile} />
 
-        <div className="bulk-import-section">
-  <h4>Employees Data Bulk Import (CSV)</h4>
+        {!editId && (
+  <div className="bulk-import-section">
+    <h4>Employees Data Bulk Import (CSV)</h4>
 
-  <div
-  className="drop-zone"
-  onDragOver={(e) => e.preventDefault()}
-  onDrop={(e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file && file.type === "text/csv") {
-      setCsvFile(file);
-      toast.success("CSV file selected");
-    } else {
-      toast.error("Only CSV files are allowed");
-    }
-  }}
-  onClick={() => document.getElementById('csv-upload').click()}
->
-  {csvFile ? (
-    <p style={{ marginTop: '8px', fontSize: '14px', color: '#1b3353' }}>
-      Selected: <strong>{csvFile.name}</strong>
+    <div
+      className="drop-zone"
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={(e) => {
+        e.preventDefault();
+        const file = e.dataTransfer.files[0];
+        if (file && file.type === "text/csv") {
+          setCsvFile(file);
+          toast.success("CSV file selected");
+        } else {
+          toast.error("Only CSV files are allowed");
+        }
+      }}
+      onClick={() => document.getElementById('csv-upload').click()}
+    >
+      {csvFile ? (
+        <p style={{ marginTop: '8px', fontSize: '14px', color: '#1b3353' }}>
+          Selected: <strong>{csvFile.name}</strong>
+        </p>
+      ) : (
+        <p>
+          Drag & Drop CSV here or <span className="browse-link">Browse</span>
+        </p>
+      )}
+    </div>
+
+    <input
+      type="file"
+      id="csv-upload"
+      accept=".csv"
+      style={{ display: 'none' }}
+      onChange={(e) => {
+        const file = e.target.files[0];
+        if (file && file.type === "text/csv") {
+          setCsvFile(file);
+        } else {
+          toast.error("Only CSV files are allowed");
+        }
+      }}
+    />
+
+    <p className="csv-note">
+      Only CSV files accepted. <a href="src/assets/sample.csv" download>Download Sample</a>
     </p>
-  ) : (
-    <p>
-      Drag & Drop CSV here or <span className="browse-link">Browse</span>
-    </p>
-  )}
-</div>
+  </div>
+)}
 
-<input
-  type="file"
-  id="csv-upload"
-  accept=".csv"
-  style={{ display: 'none' }}
-  onChange={(e) => {
-    const file = e.target.files[0];
-    if (file && file.type === "text/csv") {
-      setCsvFile(file);
-    } else {
-      toast.error("Only CSV files are allowed");
-    }
-  }}
-/>
-
-  <p className="csv-note">
-    Only CSV files accepted. <a href="src\assets\sample.csv" download>Download Sample</a>
-  </p>
-</div>
 
 
         <div className="modal-actions">
