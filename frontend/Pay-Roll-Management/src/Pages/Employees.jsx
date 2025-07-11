@@ -166,25 +166,63 @@ const Employees = () => {
 
       {/* 🧾 Modal Form */}
       {showModal && (
-        <div className="modal-backdrop">
-          <div className="modal">
-            <h3>{editId ? 'Edit Employee' : 'Add New Employee'}</h3>
-            <form className="employee-form" onSubmit={handleAddOrUpdate}>
-              <input name="name" value={form.name} onChange={handleChange} placeholder="Name" required />
-              <input name="empId" value={form.empId} onChange={handleChange} placeholder="Employee ID" required />
-              <input name="email" value={form.email} onChange={handleChange} placeholder="Email" required />
-              <input name="department" value={form.department} onChange={handleChange} placeholder="Department" required />
-              <input name="designation" value={form.designation} onChange={handleChange} placeholder="Designation" required />
-              <input type="date" name="joinDate" value={form.joinDate} onChange={handleChange} required />
-              <input name="salary" type="number" value={form.salary} onChange={handleChange} placeholder="Salary" required />
-              <div className="modal-actions">
-                <button type="submit">{editId ? 'Update' : 'Add'}</button>
-                <button type="button" onClick={() => setShowModal(false)}>Cancel</button>
-              </div>
-            </form>
-          </div>
+  <div className="modal-backdrop">
+    <div className="modal">
+      <h3>{editId ? 'Edit Employee' : 'Add New Employee'}</h3>
+
+      <form className="employee-form" onSubmit={handleAddOrUpdate}>
+        <input name="name" value={form.name} onChange={handleChange} placeholder="Name" required />
+        <input name="empId" value={form.empId} onChange={handleChange} placeholder="Employee ID" required />
+        <input name="email" value={form.email} onChange={handleChange} placeholder="Email" required />
+        <input name="department" value={form.department} onChange={handleChange} placeholder="Department" required />
+        <input name="designation" value={form.designation} onChange={handleChange} placeholder="Designation" required />
+        <input type="date" name="joinDate" value={form.joinDate} onChange={handleChange} required />
+        <input name="salary" type="number" value={form.salary} onChange={handleChange} placeholder="Salary" required />
+
+        <div className="bulk-import-section">
+  <h4>Employees Data Bulk Import (CSV)</h4>
+
+  <div
+    className="drop-zone"
+    onDragOver={(e) => e.preventDefault()}
+    onDrop={(e) => {
+      e.preventDefault();
+      const file = e.dataTransfer.files[0];
+      if (file && file.type === "text/csv") {
+        console.log("Dropped CSV file:", file);
+      } else {
+        toast.error("Only CSV files are allowed");
+      }
+    }}
+    onClick={() => document.getElementById('csv-upload').click()}
+  >
+    <p>Drag & Drop CSV here or <span className="browse-link">Browse</span></p>
+  </div>
+
+  <input
+    type="file"
+    id="csv-upload"
+    accept=".csv"
+    style={{ display: 'none' }}
+    onChange={(e) => console.log("Selected file:", e.target.files[0])}
+  />
+
+  <p className="csv-note">
+    Only CSV files accepted. <a href="./sample.xls" download>Download Sample</a>
+  </p>
+</div>
+
+
+        <div className="modal-actions">
+          <button type="submit">{editId ? 'Update' : 'Add'}</button>
+          <button type="button" onClick={() => setShowModal(false)}>Cancel</button>
         </div>
-      )}
+      </form>
+    </div>
+  </div>
+)}
+
+
     </div>
   );
 };

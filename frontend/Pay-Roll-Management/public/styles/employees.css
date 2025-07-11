@@ -15,7 +15,6 @@
   color: #2d3748;
 }
 
-/* 🚀 Search + Add Row */
 .search-controls {
   display: grid;
   grid-template-columns: 1fr 2fr auto auto;
@@ -121,6 +120,8 @@
   padding: 2rem 2.5rem;
   border-radius: 16px;
   width: 600px;
+  max-height: 100vh;
+  overflow-y: auto;
   max-width: 95%;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
   animation: scaleIn 0.3s ease;
@@ -336,4 +337,58 @@
     flex-direction: column !important;
     gap: 0.5rem;
   }
+}
+
+.bulk-import-section {
+  grid-column: span 2;
+  margin-top: 1rem;
+  padding: 1rem 1.5rem;
+  background-color: #f8fafc;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.bulk-import-section h4 {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: #1b3353;
+}
+
+.drop-zone {
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border: 2px dashed #60a5fa;
+  border-radius: 10px;
+  color: #555;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.drop-zone:hover {
+  background-color: #ebf4ff;
+  border-color: #3b82f6;
+}
+
+.drop-zone p {
+  margin: 0;
+  font-weight: 500;
+}
+
+.browse-link {
+  color: #2f80ed;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.csv-note {
+  margin-top: 0.6rem;
+  font-size: 13px;
+  color: #666;
+}
+
+.csv-note a {
+  color: #2f80ed;
+  text-decoration: underline;
 }
