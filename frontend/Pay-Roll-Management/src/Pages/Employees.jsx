@@ -208,7 +208,7 @@ const Employees = () => {
   />
 
   <p className="csv-note">
-    Only CSV files accepted. <a href="./sample.xls" download>Download Sample</a>
+    Only CSV files accepted. <a href="src\assets\sample.csv" download>Download Sample</a>
   </p>
 </div>
 
