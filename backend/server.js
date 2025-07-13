@@ -210,12 +210,21 @@ app.put('/api/employees/update/:id', async (req, res) => {
 
 app.delete('/api/employees/delete/:id', async (req, res) => {
   try {
+    const emp = await Employee.findById(req.params.id);
+
+    if (!emp) return res.status(404).json({ msg: "Employee not found" });
+
     await Employee.findByIdAndDelete(req.params.id);
-    res.status(200).json({ msg: "Employee deleted" });
+
+    await User.findOneAndDelete({ email: emp.email });
+
+    res.status(200).json({ msg: "Employee and user account deleted" });
+
   } catch (err) {
     console.error("Delete error:", err);
     res.status(500).json({ msg: "Error deleting employee" });
   }
 });
+
 
 app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
