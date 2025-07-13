@@ -175,6 +175,7 @@ const Employees = () => {
                 <th>Phone</th>
                 <th>Dept</th>
                 <th>Designation</th>
+                <th>Role</th>
                 <th>Join Date</th>
                 <th>Salary</th>
                 <th>Update</th>
@@ -190,6 +191,7 @@ const Employees = () => {
                   <td>{emp.phone || '-'}</td>
                   <td>{emp.department}</td>
                   <td>{emp.designation}</td>
+                  <td>{emp.role}</td>
                   <td>{new Date(emp.joinDate).toLocaleDateString()}</td>
                   <td>₹{emp.salary}</td>
                   <td>

@@ -22,17 +22,16 @@ mongoose.connect('mongodb://localhost:27017/payroll_app', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log("✅ MongoDB Connected"))
-.catch(err => console.log("❌ MongoDB Error:", err));
+.then(() => console.log("MongoDB Connected"))
+.catch(err => console.log("MongoDB Error:", err));
 
-// Role based on department
 const getRoleFromDepartment = (department) => {
-  if (!department) return 'employee';
-  if (department.toLowerCase() === 'hr') return 'hr';
-  return 'employee';
+  if (!department) return 'Employee';
+  if (department.toLowerCase() === 'hr') return 'Hr';
+  return 'Employee';
 };
 
-// Register API (Manual Register if needed)
+
 app.post('/api/register', async (req, res) => {
   const { username, email, password, role } = req.body;
   try {
@@ -50,7 +49,6 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-// Login API (Email Based Login)
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -73,7 +71,6 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// Forgot Password (Dummy Link for Now)
 app.post('/api/forgot-password', async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
@@ -86,7 +83,6 @@ app.post('/api/forgot-password', async (req, res) => {
   res.status(200).json({ msg: 'Password reset link sent to your email' });
 });
 
-// Add Single Employee
 app.post('/api/employees/add', async (req, res) => {
   try {
     const { name, empId, email, phone, department, designation, joinDate, salary } = req.body;
@@ -122,7 +118,6 @@ app.post('/api/employees/add', async (req, res) => {
   }
 });
 
-// Bulk Import Employees
 app.post('/api/employees/bulk', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ msg: 'No file uploaded' });
 
@@ -193,7 +188,6 @@ app.post('/api/employees/bulk', upload.single('file'), async (req, res) => {
   }
 });
 
-// Get All Employees
 app.get('/api/employees', async (req, res) => {
   try {
     const all = await Employee.find();
@@ -204,7 +198,6 @@ app.get('/api/employees', async (req, res) => {
   }
 });
 
-// Update Employee
 app.put('/api/employees/update/:id', async (req, res) => {
   try {
     const updated = await Employee.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -215,7 +208,6 @@ app.put('/api/employees/update/:id', async (req, res) => {
   }
 });
 
-// Delete Employee + Linked User
 app.delete('/api/employees/delete/:id', async (req, res) => {
   try {
     const emp = await Employee.findById(req.params.id);

@@ -9,7 +9,7 @@ const employeeSchema = new mongoose.Schema({
   designation: { type: String },
   joinDate: { type: Date },
   salary: { type: Number },
-  role: { type: String, default: 'employee' }
+  role: { type: String, default: 'Employee' }
 }, { timestamps: true });
 
 const Employee = mongoose.model('Employee', employeeSchema);
