@@ -22,15 +22,17 @@ mongoose.connect('mongodb://localhost:27017/payroll_app', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log("MongoDB Connected"))
-.catch(err => console.log("MongoDB Error:", err));
+.then(() => console.log("✅ MongoDB Connected"))
+.catch(err => console.log("❌ MongoDB Error:", err));
 
+// Role based on department
 const getRoleFromDepartment = (department) => {
   if (!department) return 'employee';
   if (department.toLowerCase() === 'hr') return 'hr';
   return 'employee';
 };
 
+// Register API (Manual Register if needed)
 app.post('/api/register', async (req, res) => {
   const { username, email, password, role } = req.body;
   try {
@@ -48,6 +50,7 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
+// Login API (Email Based Login)
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -59,10 +62,10 @@ app.post('/api/login', async (req, res) => {
 
     const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '2h' });
 
-    res.status(200).json({ 
-      token, 
-      username: user.username, 
-      role: user.role 
+    res.status(200).json({
+      token,
+      username: user.username,
+      role: user.role
     });
   } catch (err) {
     console.error("Login error:", err);
@@ -70,6 +73,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+// Forgot Password (Dummy Link for Now)
 app.post('/api/forgot-password', async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
@@ -82,14 +86,15 @@ app.post('/api/forgot-password', async (req, res) => {
   res.status(200).json({ msg: 'Password reset link sent to your email' });
 });
 
+// Add Single Employee
 app.post('/api/employees/add', async (req, res) => {
   try {
-    const { name, empId, email, department, designation, joinDate, salary } = req.body;
+    const { name, empId, email, phone, department, designation, joinDate, salary } = req.body;
 
     const role = getRoleFromDepartment(department);
 
     const newEmp = new Employee({
-      name, empId, email, department, designation, joinDate, salary, role
+      name, empId, email, phone, department, designation, joinDate, salary, role
     });
 
     await newEmp.save();
@@ -97,7 +102,7 @@ app.post('/api/employees/add', async (req, res) => {
     const existingUser = await User.findOne({ email });
 
     if (!existingUser) {
-      const hashedPwd = await bcrypt.hash("Welcome@123", 10);
+      const hashedPwd = await bcrypt.hash(phone, 10);
 
       const newUser = new User({
         username: name,
@@ -117,6 +122,7 @@ app.post('/api/employees/add', async (req, res) => {
   }
 });
 
+// Bulk Import Employees
 app.post('/api/employees/bulk', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ msg: 'No file uploaded' });
 
@@ -124,8 +130,6 @@ app.post('/api/employees/bulk', upload.single('file'), async (req, res) => {
   const filePath = path.join(__dirname, req.file.path);
 
   try {
-    console.log("Bulk import");
-
     fs.createReadStream(filePath)
       .pipe(csv())
       .on('data', (data) => {
@@ -133,6 +137,7 @@ app.post('/api/employees/bulk', upload.single('file'), async (req, res) => {
           name: data.name,
           empId: data.empId,
           email: data.email,
+          phone: data.phone,
           department: data.department,
           designation: data.designation,
           joinDate: new Date(data.joinDate),
@@ -162,7 +167,7 @@ app.post('/api/employees/bulk', upload.single('file'), async (req, res) => {
             const existingUser = await User.findOne({ email: emp.email });
 
             if (!existingUser) {
-              const hashedPwd = await bcrypt.hash("Welcome@123", 10);
+              const hashedPwd = await bcrypt.hash(emp.phone, 10);
 
               await User.create({
                 username: emp.name,
@@ -188,9 +193,10 @@ app.post('/api/employees/bulk', upload.single('file'), async (req, res) => {
   }
 });
 
+// Get All Employees
 app.get('/api/employees', async (req, res) => {
   try {
-    const all = await Employee.find();  
+    const all = await Employee.find();
     res.status(200).json(all);
   } catch (err) {
     console.error("Get Employees error:", err);
@@ -198,6 +204,7 @@ app.get('/api/employees', async (req, res) => {
   }
 });
 
+// Update Employee
 app.put('/api/employees/update/:id', async (req, res) => {
   try {
     const updated = await Employee.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -208,14 +215,13 @@ app.put('/api/employees/update/:id', async (req, res) => {
   }
 });
 
+// Delete Employee + Linked User
 app.delete('/api/employees/delete/:id', async (req, res) => {
   try {
     const emp = await Employee.findById(req.params.id);
-
     if (!emp) return res.status(404).json({ msg: "Employee not found" });
 
     await Employee.findByIdAndDelete(req.params.id);
-
     await User.findOneAndDelete({ email: emp.email });
 
     res.status(200).json({ msg: "Employee and user account deleted" });
@@ -225,6 +231,5 @@ app.delete('/api/employees/delete/:id', async (req, res) => {
     res.status(500).json({ msg: "Error deleting employee" });
   }
 });
-
 
 app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));

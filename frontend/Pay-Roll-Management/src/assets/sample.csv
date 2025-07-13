@@ -1,9 +1,6 @@
-name,empId,email,department,designation,joinDate,salary
-Vikram,123123,vikramrokith03@gmail.com,Product,Senior Sales,7/11/2025,100000
-Ravi Kumar,EMP002,ravi.kumar@example.com,Engineering,Software Engineer,6/10/2024,85000
-Priya Sharma,EMP003,priya.sharma@example.com,Marketing,Content Manager,3/15/2023,72000
-Arun Das,EMP004,arun.das@example.com,Finance,Account Executive,1/8/2022,64000
-Sneha Reddy,EMP005,sneha.reddy@example.com,HR,HR Executive,5/20/2025,59000
-Rahul Mehta,EMP006,rahul.mehta@example.com,Sales,Regional Manager,12/1/2021,95000
-Neha Kapoor,EMP007,neha.kapoor@example.com,Support,Customer Success,8/5/2023,68000
-Karthik S,EMP008,karthik.s@example.com,Engineering,DevOps Engineer,9/18/2022,88000
+name,empId,email,phone,department,designation,joinDate,salary
+Vikram,123123,vikramrokith03@gmail.com,9876543210,Product,Senior Sales,2025-07-11,100000
+Ravi Kumar,EMP002,ravi.kumar@example.com,9876543211,Engineering,Software Engineer,2024-06-10,85000
+Priya Sharma,EMP003,priya.sharma@example.com,9876543212,Marketing,Content Manager,2023-03-15,72000
+Arun Das,EMP004,arun.das@example.com,9876543213,Finance,Account Executive,2022-01-08,64000
+Sneha Reddy,EMP005,sneha.reddy@example.com,9876543214,HR,HR Executive,2025-05-20,59000
