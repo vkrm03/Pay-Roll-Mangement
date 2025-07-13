@@ -49,7 +49,6 @@ const Login = () => {
           <option value="admin">Admin</option>
           <option value="hr">HR</option>
           <option value="employee">Employee</option>
-          <option value="finance">Finance</option>
         </select>
 
         <input type="text" name="username" placeholder="Username" value={form.username} onChange={handleChange} required />

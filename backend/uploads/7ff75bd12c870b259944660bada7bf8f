@@ -1,0 +1,21 @@
+name,empId,email,department,designation,joinDate,salary
+Vikram R,EMP001,vikram.r@example.com,Product,Senior Sales,2025-07-11,100000
+Ravi Kumar,EMP002,ravi.kumar@example.com,Engineering,Software Engineer,2024-06-10,85000
+Priya Sharma,EMP003,priya.sharma@example.com,Marketing,Content Manager,2023-03-15,72000
+Arun Das,EMP004,arun.das@example.com,Finance,Account Executive,2022-01-08,64000
+Sneha Reddy,EMP005,sneha.reddy@example.com,HR,HR Executive,2025-05-20,59000
+Rahul Mehta,EMP006,rahul.mehta@example.com,Sales,Regional Manager,2021-12-01,95000
+Neha Kapoor,EMP007,neha.kapoor@example.com,Support,Customer Success,2023-08-05,68000
+Karthik S,EMP008,karthik.s@example.com,Engineering,DevOps Engineer,2022-09-18,88000
+Anjali Verma,EMP009,anjali.verma@example.com,HR,Recruiter,2024-04-10,55000
+Deepak Singh,EMP010,deepak.singh@example.com,Finance,Finance Analyst,2023-07-21,70000
+Sunita Iyer,EMP011,sunita.iyer@example.com,Product,Product Manager,2025-01-05,120000
+Rohit Nair,EMP012,rohit.nair@example.com,Sales,Sales Executive,2024-02-14,68000
+Meena Gupta,EMP013,meena.gupta@example.com,Marketing,SEO Specialist,2023-11-03,62000
+Suresh Babu,EMP014,suresh.babu@example.com,Engineering,Backend Developer,2022-06-17,86000
+Lakshmi Devi,EMP015,lakshmi.devi@example.com,Support,Tech Support Lead,2023-09-23,65000
+Tarun Patel,EMP016,tarun.patel@example.com,Engineering,Frontend Developer,2022-10-30,81000
+Pooja Desai,EMP017,pooja.desai@example.com,HR,HR Manager,2025-03-28,75000
+Mahesh Rao,EMP018,mahesh.rao@example.com,Finance,Senior Accountant,2023-05-16,79000
+Isha Malik,EMP019,isha.malik@example.com,Sales,Sales Manager,2024-08-11,97000
+Amit Chawla,EMP020,amit.chawla@example.com,Marketing,Content Strategist,2023-12-19,70000

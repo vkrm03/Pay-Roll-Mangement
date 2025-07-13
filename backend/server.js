@@ -27,6 +27,13 @@ mongoose.connect('mongodb://localhost:27017/payroll_app', {
 .catch(err => console.log("MongoDB Error:", err));
 
 
+const getRoleFromDepartment = (department) => {
+  if (!department) return 'employee';
+  if (department.toLowerCase() === 'hr') return 'hr';
+  return 'employee';
+};
+
+
 app.post('/api/register', async (req, res) => {
   const { username, email, password, role } = req.body;
   try {
@@ -76,14 +83,39 @@ app.post('/api/forgot-password', async (req, res) => {
 
 app.post('/api/employees/add', async (req, res) => {
   try {
-    const newEmp = new Employee(req.body);
+    const { name, empId, email, department, designation, joinDate, salary } = req.body;
+
+    const role = getRoleFromDepartment(department);
+
+    const newEmp = new Employee({
+      name, empId, email, department, designation, joinDate, salary, role
+    });
+
     await newEmp.save();
-    res.status(201).json({ msg: "Employee added", newEmp });
+
+    const existingUser = await User.findOne({ email });
+
+    if (!existingUser) {
+      const hashedPwd = await bcrypt.hash("Welcome@123", 10);
+
+      const newUser = new User({
+        username: name,
+        email,
+        password: hashedPwd,
+        role
+      });
+
+      await newUser.save();
+    }
+
+    res.status(201).json({ msg: "Employee & User created successfully", newEmp });
+
   } catch (err) {
     console.error("Add Employee error:", err);
     res.status(500).json({ msg: "Error adding employee" });
   }
 });
+
 
 
 
@@ -95,7 +127,7 @@ app.post('/api/employees/bulk', upload.single('file'), async (req, res) => {
 
   try {
     console.log("Bulk import");
-    
+
     fs.createReadStream(filePath)
       .pipe(csv())
       .on('data', (data) => {
@@ -106,39 +138,59 @@ app.post('/api/employees/bulk', upload.single('file'), async (req, res) => {
           department: data.department,
           designation: data.designation,
           joinDate: new Date(data.joinDate),
-          salary: Number(data.salary)
+          salary: Number(data.salary),
+          role: getRoleFromDepartment(data.department)
         });
       })
       .on('end', async () => {
-  try {
-    const existing = await Employee.find({ empId: { $in: results.map(emp => emp.empId) } });
-    const existingIds = new Set(existing.map(emp => emp.empId));
+        try {
+          const existing = await Employee.find({ empId: { $in: results.map(emp => emp.empId) } });
+          const existingIds = new Set(existing.map(emp => emp.empId));
 
-    const duplicates = results.filter(emp => existingIds.has(emp.empId)).map(emp => emp.empId);
-    const filteredResults = results.filter(emp => !existingIds.has(emp.empId));
+          const duplicates = results.filter(emp => existingIds.has(emp.empId)).map(emp => emp.empId);
+          const filteredResults = results.filter(emp => !existingIds.has(emp.empId));
 
-    if (duplicates.length > 0) {
-      fs.unlinkSync(filePath);
-      return res.status(400).json({
-        msg: "Duplicate Employee IDs found in CSV",
-        duplicates,
+          if (duplicates.length > 0) {
+            fs.unlinkSync(filePath);
+            return res.status(400).json({
+              msg: "Duplicate Employee IDs found in CSV",
+              duplicates,
+            });
+          }
+
+          // Insert Employees & Create Users
+          for (const emp of filteredResults) {
+            await Employee.create(emp);
+
+            const existingUser = await User.findOne({ email: emp.email });
+
+            if (!existingUser) {
+              const hashedPwd = await bcrypt.hash("Welcome@123", 10);
+
+              await User.create({
+                username: emp.name,
+                email: emp.email,
+                password: hashedPwd,
+                role: emp.role
+              });
+            }
+          }
+
+          fs.unlinkSync(filePath);
+          res.status(201).json({ msg: "Employees & Users imported successfully" });
+
+        } catch (err) {
+          console.error("Bulk insert error:", err);
+          res.status(500).json({ msg: "Error importing employees" });
+        }
       });
-    }
-
-    await Employee.insertMany(filteredResults);
-    fs.unlinkSync(filePath);
-    res.status(201).json({ msg: "Employees imported successfully" });
-  } catch (err) {
-    console.error("Bulk insert error:", err);
-    res.status(500).json({ msg: "Error importing employees" });
-  }
-});
 
   } catch (err) {
     console.error("CSV parsing error:", err);
     res.status(500).json({ msg: 'Error processing file' });
   }
 });
+
 
 
 
