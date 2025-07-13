@@ -7,7 +7,7 @@ import '../../public/styles/auth.css';
 
 const Login = () => {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ username: '', password: '', role: '' });
+  const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
@@ -15,28 +15,28 @@ const Login = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  const { username, password, role } = form;
+    e.preventDefault();
+    const { email, password } = form;
 
-  if (!username || !password || !role) {
-    return setError('Please fill in all fields');
-  }
+    if (!email || !password) {
+      return setError('Please fill in all fields');
+    }
 
-  try {
-    const res = await axios.post(`${api}login`, form);
-    localStorage.setItem('token', res.data.token);
-    localStorage.setItem('username', res.data.username);
-    localStorage.setItem('role', res.data.role);
-    window.dispatchEvent(new Event("userChanged"));
+    try {
+      const res = await axios.post(`${api}login`, { email, password });
 
-    toast.success('Login successful!');
-    navigate(`/${res.data.role}`);
-  } catch (err) {
-    toast.error(err.response?.data?.msg || 'Login failed');
-    setError(err.response?.data?.msg || 'Login failed');
-  }
-};
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('username', res.data.username);
+      localStorage.setItem('role', res.data.role);
+      window.dispatchEvent(new Event("userChanged"));
 
+      toast.success('Login successful!');
+      navigate(`/${res.data.role}`);
+    } catch (err) {
+      toast.error(err.response?.data?.msg || 'Login failed');
+      setError(err.response?.data?.msg || 'Login failed');
+    }
+  };
 
   return (
     <div className="login-container">
@@ -44,17 +44,26 @@ const Login = () => {
         <h2>Login</h2>
         {error && <p className="error-msg">{error}</p>}
 
-        <select name="role" value={form.role} onChange={handleChange} required>
-          <option value="">Select Role</option>
-          <option value="admin">Admin</option>
-          <option value="hr">HR</option>
-          <option value="employee">Employee</option>
-        </select>
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={form.email}
+          onChange={handleChange}
+          required
+        />
 
-        <input type="text" name="username" placeholder="Username" value={form.username} onChange={handleChange} required />
-        <input type="password" name="password" placeholder="Password" value={form.password} onChange={handleChange} required />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={form.password}
+          onChange={handleChange}
+          required
+        />
 
         <button type="submit">Login</button>
+
         <p className="login-hint">
           <Link to="/forgot-password" className="forgot-link">Forgot Password?</Link>
         </p>

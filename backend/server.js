@@ -18,7 +18,6 @@ const upload = multer({ dest: 'uploads/' });
 app.use(cors());
 app.use(express.json());
 
-
 mongoose.connect('mongodb://localhost:27017/payroll_app', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -26,13 +25,11 @@ mongoose.connect('mongodb://localhost:27017/payroll_app', {
 .then(() => console.log("MongoDB Connected"))
 .catch(err => console.log("MongoDB Error:", err));
 
-
 const getRoleFromDepartment = (department) => {
   if (!department) return 'employee';
   if (department.toLowerCase() === 'hr') return 'hr';
   return 'employee';
 };
-
 
 app.post('/api/register', async (req, res) => {
   const { username, email, password, role } = req.body;
@@ -52,9 +49,9 @@ app.post('/api/register', async (req, res) => {
 });
 
 app.post('/api/login', async (req, res) => {
-  const { username, password, role } = req.body;
+  const { email, password } = req.body;
   try {
-    const user = await User.findOne({ username, role });
+    const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ msg: "User not found" });
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -62,7 +59,11 @@ app.post('/api/login', async (req, res) => {
 
     const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '2h' });
 
-    res.status(200).json({ token, username: user.username, role: user.role });
+    res.status(200).json({ 
+      token, 
+      username: user.username, 
+      role: user.role 
+    });
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ msg: "Server error during login" });
@@ -116,9 +117,6 @@ app.post('/api/employees/add', async (req, res) => {
   }
 });
 
-
-
-
 app.post('/api/employees/bulk', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ msg: 'No file uploaded' });
 
@@ -158,7 +156,6 @@ app.post('/api/employees/bulk', upload.single('file'), async (req, res) => {
             });
           }
 
-          // Insert Employees & Create Users
           for (const emp of filteredResults) {
             await Employee.create(emp);
 
@@ -190,9 +187,6 @@ app.post('/api/employees/bulk', upload.single('file'), async (req, res) => {
     res.status(500).json({ msg: 'Error processing file' });
   }
 });
-
-
-
 
 app.get('/api/employees', async (req, res) => {
   try {
