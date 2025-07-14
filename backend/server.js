@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('./models/User');
 const Employee = require('./models/Employee');
+const Attendance = require('./models/Attendance');
 const multer = require('multer');
 const csv = require('csv-parser');
 const fs = require('fs');
@@ -187,6 +188,107 @@ app.post('/api/employees/bulk', upload.single('file'), async (req, res) => {
     res.status(500).json({ msg: 'Error processing file' });
   }
 });
+
+
+
+
+
+
+
+app.post('/api/attendance/mark', async (req, res) => {
+  const { empId, date, status } = req.body;
+
+  if (!empId || !date || !status) {
+    return res.status(400).json({ msg: "empId, date, and status are required" });
+  }
+
+  try {
+    const existing = await Attendance.findOne({ empId, date });
+
+    if (existing) {
+      existing.status = status;
+      await existing.save();
+      return res.status(200).json({ msg: "Attendance updated" });
+    }
+
+    await Attendance.create({ empId, date, status });
+    res.status(201).json({ msg: "Attendance marked" });
+
+  } catch (err) {
+    console.error("Mark Attendance Error:", err);
+    res.status(500).json({ msg: "Error marking attendance" });
+  }
+});
+
+
+
+app.get('/api/attendance', async (req, res) => {
+  const { date } = req.query;
+
+  if (!date) return res.status(400).json({ msg: "Date query param required" });
+
+  try {
+    const records = await Attendance.find({ date });
+    res.status(200).json(records);
+  } catch (err) {
+    console.error("Fetch Attendance Error:", err);
+    res.status(500).json({ msg: "Error fetching attendance" });
+  }
+});
+
+
+
+
+app.post('/api/attendance/bulk', upload.single('file'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ msg: 'No file uploaded' });
+
+  const filePath = path.join(__dirname, req.file.path);
+  const results = [];
+
+  try {
+    fs.createReadStream(filePath)
+      .pipe(csv())
+      .on('data', (data) => {
+        if (data.empId && data.status) {
+          results.push({
+            empId: data.empId,
+            date: req.body.date,
+            status: data.status
+          });
+        }
+      })
+      .on('end', async () => {
+        try {
+          for (const record of results) {
+            const existing = await Attendance.findOne({ empId: record.empId, date: record.date });
+
+            if (existing) {
+              existing.status = record.status;
+              await existing.save();
+            } else {
+              await Attendance.create(record);
+            }
+          }
+
+          fs.unlinkSync(filePath);
+          res.status(201).json({ msg: "Bulk attendance processed successfully" });
+
+        } catch (err) {
+          console.error("Bulk Attendance Error:", err);
+          res.status(500).json({ msg: "Error processing bulk attendance" });
+        }
+      });
+
+  } catch (err) {
+    console.error("CSV Attendance Upload Error:", err);
+    res.status(500).json({ msg: 'Error reading CSV file' });
+  }
+});
+
+
+
+
+
 
 app.get('/api/employees', async (req, res) => {
   try {

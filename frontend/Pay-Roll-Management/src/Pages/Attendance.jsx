@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import api from '../../public/api';
-import '../../public/styles/employees.css';
-import '../../public/styles/attendance.css';
+import '../../public/styles/attendance.css'; // Only attendance styles now!
 
 const Attendance = () => {
   const [employees, setEmployees] = useState([]);
@@ -12,6 +11,10 @@ const Attendance = () => {
   const [csvFile, setCsvFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const [searchType, setSearchType] = useState('name');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortType, setSortType] = useState('');
+
   useEffect(() => {
     fetchEmployees();
     fetchAttendance();
@@ -19,10 +22,13 @@ const Attendance = () => {
 
   const fetchEmployees = async () => {
     try {
+      setLoading(true);
       const res = await axios.get(`${api}employees`);
       setEmployees(res.data);
     } catch (err) {
       toast.error('Failed to fetch employees');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -62,29 +68,103 @@ const Attendance = () => {
       });
       toast.success('Bulk attendance uploaded');
       fetchAttendance();
+      setCsvFile(null);
     } catch (err) {
       toast.error('Bulk upload failed');
     }
   };
 
+  const filteredEmployees = employees
+    .filter(emp => {
+      const val = emp[searchType]?.toLowerCase();
+      return val?.includes(searchTerm.toLowerCase());
+    })
+    .sort((a, b) => {
+      if (sortType === 'name') return a.name.localeCompare(b.name);
+      if (sortType === 'status') {
+        const statusA = attendance[a.empId] || 'Not Marked';
+        const statusB = attendance[b.empId] || 'Not Marked';
+        return statusA.localeCompare(statusB);
+      }
+      return 0;
+    });
+
   return (
-    <div className="employees-container">
+    <div className="attendance-page employees-container">
       <h2>Attendance Management</h2>
 
       <div className="search-controls">
-        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+        />
 
-        <div className="bulk-import-section">
-          <input
-            type="file"
-            accept=".csv"
-            onChange={(e) => setCsvFile(e.target.files[0])}
-          />
-          <button onClick={handleBulkUpload}>Upload CSV</button>
-          <p className="csv-note">
-            Only CSV files accepted. <a href="src/assets/attendance_sample.csv" download>Download Sample</a>
-          </p>
+        <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
+          <option value="name">Name</option>
+          <option value="empId">Employee ID</option>
+          <option value="department">Department</option>
+        </select>
+
+        <input
+          type="text"
+          placeholder={`Search by ${searchType}...`}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+
+        <select value={sortType} onChange={(e) => setSortType(e.target.value)}>
+          <option value="">Sort</option>
+          <option value="name">Name (A-Z)</option>
+          <option value="status">Status (Present/Absent)</option>
+        </select>
+      </div>
+
+      <div className="bulk-import-section">
+        <h4>Upload Attendance CSV</h4>
+
+        <div
+          className="drop-zone"
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => {
+            e.preventDefault();
+            const file = e.dataTransfer.files[0];
+            if (file && file.type === "text/csv") {
+              setCsvFile(file);
+              toast.success(`Selected: ${file.name}`);
+            } else {
+              toast.error("Only CSV files allowed!");
+            }
+          }}
+          onClick={() => document.getElementById('csv-upload').click()}
+        >
+          {csvFile ? (
+            <p><strong>{csvFile.name}</strong> selected</p>
+          ) : (
+            <p>Drag & Drop CSV here or <span className="browse-link">Browse</span></p>
+          )}
         </div>
+
+        <input
+          type="file"
+          id="csv-upload"
+          accept=".csv"
+          style={{ display: 'none' }}
+          onChange={(e) => {
+            const file = e.target.files[0];
+            if (file && file.type === "text/csv") {
+              setCsvFile(file);
+            } else {
+              toast.error("Only CSV files are allowed!");
+            }
+          }}
+        />
+
+        <button className="upload-btn" onClick={handleBulkUpload}>Upload CSV</button>
+
+        <p className="csv-note">
+          Only CSV files accepted. <a href="src/assets/attendance_sample.csv" download>Download Sample</a>
+        </p>
       </div>
 
       {loading ? (
@@ -102,29 +182,25 @@ const Attendance = () => {
               </tr>
             </thead>
             <tbody>
-              {employees.map(emp => (
+              {filteredEmployees.map(emp => (
                 <tr key={emp._id}>
                   <td>{emp.name}</td>
                   <td>{emp.empId}</td>
                   <td>{emp.department}</td>
                   <td>
-                    {attendance[emp.empId] === 'Present' ? (
-                      <span style={{ color: 'green' }}>🟢 Present</span>
-                    ) : attendance[emp.empId] === 'Absent' ? (
-                      <span style={{ color: 'red' }}>🔴 Absent</span>
-                    ) : (
-                      <span style={{ color: '#888' }}>Not Marked</span>
-                    )}
+                    <span className={`attendance-status ${attendance[emp.empId]?.toLowerCase() || 'not-marked'}`}>
+                      {attendance[emp.empId] || 'Not Marked'}
+                    </span>
                   </td>
                   <td>
                     <button
-                      className="present-btn"
+                      className="attendance-btn present"
                       onClick={() => markAttendance(emp.empId, 'Present')}
                     >
                       Present
                     </button>
                     <button
-                      className="absent-btn"
+                      className="attendance-btn absent"
                       onClick={() => markAttendance(emp.empId, 'Absent')}
                     >
                       Absent
