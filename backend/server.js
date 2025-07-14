@@ -189,12 +189,6 @@ app.post('/api/employees/bulk', upload.single('file'), async (req, res) => {
   }
 });
 
-
-
-
-
-
-
 app.post('/api/attendance/mark', async (req, res) => {
   const { empId, date, status } = req.body;
 
@@ -220,8 +214,6 @@ app.post('/api/attendance/mark', async (req, res) => {
   }
 });
 
-
-
 app.get('/api/attendance', async (req, res) => {
   const { date } = req.query;
 
@@ -235,9 +227,6 @@ app.get('/api/attendance', async (req, res) => {
     res.status(500).json({ msg: "Error fetching attendance" });
   }
 });
-
-
-
 
 app.post('/api/attendance/bulk', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ msg: 'No file uploaded' });
@@ -284,11 +273,6 @@ app.post('/api/attendance/bulk', upload.single('file'), async (req, res) => {
     res.status(500).json({ msg: 'Error reading CSV file' });
   }
 });
-
-
-
-
-
 
 app.get('/api/employees', async (req, res) => {
   try {

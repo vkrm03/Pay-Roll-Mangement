@@ -74,6 +74,34 @@ const Attendance = () => {
     }
   };
 
+  const downloadAttendanceCSV = () => {
+  const header = ['Emp ID', 'Name', 'Department', 'Status'];
+  
+  const rows = employees.map(emp => {
+    return [
+      emp.empId,
+      emp.name,
+      emp.department,
+      attendance[emp.empId] || 'Not Marked'
+    ];
+  });
+
+  const csvContent = [header, ...rows]
+    .map(e => e.join(","))
+    .join("\n");
+
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `attendance_${date}.csv`;
+  link.click();
+
+  URL.revokeObjectURL(url);
+};
+
+
   const filteredEmployees = employees
     .filter(emp => {
       const val = emp[searchType]?.toLowerCase();
@@ -118,6 +146,8 @@ const Attendance = () => {
           <option value="name">Name (A-Z)</option>
           <option value="status">Status (Present/Absent)</option>
         </select>
+
+        <button className="download-btn" onClick={downloadAttendanceCSV}>Download Attendance (.csv)</button>
       </div>
 
       <div className="bulk-import-section">
