@@ -41,7 +41,7 @@ const Navbar = () => {
           <li><NavLink to="/dashboard" onClick={toggleMenu}>Dashboard</NavLink></li>
           <li><NavLink to="/employees" onClick={toggleMenu}>Employees</NavLink></li>
           <li><NavLink to="/attendance" onClick={toggleMenu}>Attendance</NavLink></li>
-          <li><NavLink to="/tax" onClick={toggleMenu}>Tax</NavLink></li>
+          <li><NavLink to="/payroll" onClick={toggleMenu}>Payroll</NavLink></li>
           <li><NavLink to="/settings" onClick={toggleMenu}>Settings</NavLink></li>
 
           {user ? (
