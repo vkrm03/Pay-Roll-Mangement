@@ -325,14 +325,21 @@ app.get('/api/payroll', async (req, res) => {
 
 app.post('/api/payroll/add', async (req, res) => {
   try {
-    const { name, empId, basic, allowance, deduction } = req.body;
+    const { empId, basic, allowance, deduction } = req.body;
+
+    // Fetch employee first
+    const employee = await Employee.findOne({ empId });
+
+    if (!employee) {
+      return res.status(404).json({ msg: "Employee not found with this ID" });
+    }
 
     const gross = Number(basic) + Number(allowance);
     const net = gross - Number(deduction);
 
     const newPayroll = new Payroll({
-      name,
-      empId,
+      name: employee.name,  // From Employee DB
+      empId: employee.empId,
       basic,
       allowance,
       deduction,
@@ -341,6 +348,7 @@ app.post('/api/payroll/add', async (req, res) => {
     });
 
     await newPayroll.save();
+
     res.status(201).json({ msg: "Payroll computed successfully", newPayroll });
 
   } catch (err) {
@@ -351,13 +359,17 @@ app.post('/api/payroll/add', async (req, res) => {
 
 app.put('/api/payroll/update/:id', async (req, res) => {
   try {
-    const { name, empId, basic, allowance, deduction } = req.body;
+    const { basic, allowance, deduction } = req.body;
 
     const gross = Number(basic) + Number(allowance);
     const net = gross - Number(deduction);
 
     const updated = await Payroll.findByIdAndUpdate(req.params.id, {
-      name, empId, basic, allowance, deduction, gross, net
+      basic,
+      allowance,
+      deduction,
+      gross,
+      net
     }, { new: true });
 
     res.status(200).json({ msg: "Payroll updated", updated });
@@ -368,6 +380,7 @@ app.put('/api/payroll/update/:id', async (req, res) => {
   }
 });
 
+
 app.delete('/api/payroll/delete/:id', async (req, res) => {
   try {
     await Payroll.findByIdAndDelete(req.params.id);
@@ -377,6 +390,9 @@ app.delete('/api/payroll/delete/:id', async (req, res) => {
     res.status(500).json({ msg: "Error deleting payroll" });
   }
 });
+
+
+
 
 
 
