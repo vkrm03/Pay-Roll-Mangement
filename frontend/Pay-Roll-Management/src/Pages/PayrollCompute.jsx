@@ -4,198 +4,172 @@ import { toast } from 'react-toastify';
 import api from '../../public/api';
 import '../../public/styles/payroll.css';
 
-const Employees = () => {
-  const [employees, setEmployees] = useState([]);
-  const [form, setForm] = useState({ name: '', empId: '', email: '', phone: '', department: '', designation: '', joinDate: '', salary: '' });
+const Payroll = () => {
+  const [payrolls, setPayrolls] = useState([]);
+  const [form, setForm] = useState({
+    name: '', empId: '', basic: '', allowance: '', deduction: '', gross: '', net: ''
+  });
   const [editId, setEditId] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [csvFile, setCsvFile] = useState(null);
   const [searchType, setSearchType] = useState("name");
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortType, setSortType] = useState("");
-  const [viewEmp, setViewEmp] = useState(null);
-
   const [currentPage, setCurrentPage] = useState(1);
   const perPage = 5;
 
   useEffect(() => {
-    fetchEmployees();
+    fetchPayrolls();
   }, []);
 
-  const fetchEmployees = async () => {
+  const fetchPayrolls = async () => {
     try {
-      const res = await axios.get(`${api}employees`);
-      if (Array.isArray(res.data)) {
-        setEmployees(res.data);
-      } else if (res.data.employees) {
-        setEmployees(res.data.employees);
-      }
+      const res = await axios.get(`${api}payroll`);
+      setPayrolls(res.data);
     } catch (err) {
-      toast.error('Failed to fetch employees');
+      toast.error('Failed to fetch payrolls');
     }
   };
 
-  const filteredEmployees = employees
-    .filter(emp => emp[searchType]?.toLowerCase().includes(searchTerm.toLowerCase()))
-    .sort((a, b) => {
-      if (sortType === "salary") return b.salary - a.salary;
-      if (sortType === "name") return a.name.localeCompare(b.name);
-      if (sortType === "joinDate") return new Date(b.joinDate) - new Date(a.joinDate);
-      return 0;
-    });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
+  };
 
-  const totalPages = Math.ceil(filteredEmployees.length / perPage);
-  const displayed = filteredEmployees.slice((currentPage - 1) * perPage, currentPage * perPage);
+  const calculateGrossNet = () => {
+    const basic = Number(form.basic) || 0;
+    const allowance = Number(form.allowance) || 0;
+    const deduction = Number(form.deduction) || 0;
+    const gross = basic + allowance;
+    const net = gross - deduction;
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+    setForm(prev => ({ ...prev, gross, net }));
+  };
 
   const openAddModal = () => {
-    setForm({ name: '', empId: '', email: '', phone: '', department: '', designation: '', joinDate: '', salary: '' });
+    setForm({ name: '', empId: '', basic: '', allowance: '', deduction: '', gross: '', net: '' });
     setEditId(null);
-    setCsvFile(null);
     setShowModal(true);
   };
 
   const handleAddOrUpdate = async (e) => {
     e.preventDefault();
 
-    if (csvFile) {
-      const formData = new FormData();
-      formData.append("file", csvFile);
-
-      try {
-        await axios.post(`${api}employees/bulk`, formData);
-        toast.success("Bulk import successful!");
-        fetchEmployees();
-        setShowModal(false);
-      } catch (err) {
-        toast.error("CSV Import failed!");
-      }
+    if (!form.basic || !form.allowance || !form.deduction) {
+      toast.error("Please fill in salary components and calculate first!");
       return;
     }
 
-    const url = editId ? `${api}employees/update/${editId}` : `${api}employees/add`;
+    const url = editId ? `${api}payroll/update/${editId}` : `${api}payroll/add`;
     const method = editId ? 'put' : 'post';
 
     try {
       await axios[method](url, form);
-      toast.success(editId ? 'Updated!' : 'Added!');
-      fetchEmployees();
+      toast.success(editId ? 'Payroll Updated!' : 'Payroll Added!');
+      fetchPayrolls();
       setShowModal(false);
     } catch (err) {
-      toast.error('Failed to save employee');
+      toast.error('Failed to save payroll');
     }
   };
 
-  const handleExport = () => {
-    const headers = ["Name", "ID", "Email", "Phone", "Dept", "Designation", "Join Date", "Salary"];
-    const rows = employees.map(emp => [
-      emp.name, emp.empId, emp.email, emp.phone, emp.department, emp.designation,
-      new Date(emp.joinDate).toLocaleDateString(), emp.salary
-    ]);
+  const filtered = payrolls.filter(p =>
+    p[searchType]?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
+  const totalPages = Math.ceil(filtered.length / perPage);
+  const displayed = filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
+
+  const handleExport = () => {
+    const headers = ["Name", "ID", "Basic", "Allowance", "Deduction", "Gross", "Net"];
+    const rows = payrolls.map(p => [
+      p.name, p.empId, p.basic, p.allowance, p.deduction, p.gross, p.net
+    ]);
     const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
     const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
 
+    const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = "employees.csv";
+    link.download = "payroll.csv";
     link.click();
-
     URL.revokeObjectURL(url);
   };
 
   return (
-    <div className="employees-container">
-      <h2>Employees Management</h2>
+    <div className="payroll-container">
+      <h2>Payroll Computation</h2>
 
       <div className="controls">
         <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
           <option value="name">Name</option>
-          <option value="empId">ID</option>
-          <option value="email">Email</option>
-          <option value="department">Department</option>
+          <option value="empId">Employee ID</option>
         </select>
 
-        <input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder={`Search ${searchType}`} />
+        <input
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder={`Search by ${searchType}`}
+        />
 
-        <select value={sortType} onChange={(e) => setSortType(e.target.value)}>
-          <option value="">Sort</option>
-          <option value="name">Name</option>
-          <option value="salary">Salary</option>
-          <option value="joinDate">Join Date</option>
-        </select>
-
-        <button onClick={openAddModal}>+ Add</button>
+        <button onClick={openAddModal}>+ Compute Payroll</button>
         <button onClick={handleExport}>Export CSV</button>
-        <button onClick={() => { setSearchTerm(""); setSortType(""); setCurrentPage(1); }}>Reset</button>
+        <button onClick={() => { setSearchTerm(""); setCurrentPage(1); }}>Reset</button>
       </div>
 
       <table>
         <thead>
           <tr>
-            <th>Name</th><th>ID</th><th>Email</th><th>Phone</th><th>Dept</th><th>Salary</th><th>Actions</th>
+            <th>Name</th><th>ID</th><th>Basic</th><th>Allowance</th><th>Deduction</th><th>Gross</th><th>Net</th><th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {displayed.map(emp => (
-            <tr key={emp._id}>
-              <td className="emp-name" onClick={() => setViewEmp(emp)}>{emp.name}</td>
-              <td>{emp.empId}</td>
-              <td>{emp.email}</td>
-              <td>{emp.phone}</td>
-              <td>{emp.department}</td>
-              <td>₹{emp.salary}</td>
+          {displayed.length > 0 ? displayed.map(p => (
+            <tr key={p._id}>
+              <td>{p.name}</td>
+              <td>{p.empId}</td>
+              <td>₹{p.basic}</td>
+              <td>₹{p.allowance}</td>
+              <td>₹{p.deduction}</td>
+              <td>₹{p.gross}</td>
+              <td>₹{p.net}</td>
               <td>
-                <button onClick={() => { setForm(emp); setEditId(emp._id); setShowModal(true); }}>Edit</button>
+                <button onClick={() => { setForm(p); setEditId(p._id); setShowModal(true); }}>Edit</button>
               </td>
             </tr>
-          ))}
+          )) : (
+            <tr><td colSpan="8" style={{ textAlign: 'center' }}>No records found</td></tr>
+          )}
         </tbody>
       </table>
 
-      {/* Pagination */}
       <div className="pagination">
         <button disabled={currentPage === 1} onClick={() => setCurrentPage(prev => prev - 1)}>Prev</button>
-        <span>Page {currentPage}/{totalPages}</span>
-        <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(prev => prev + 1)}>Next</button>
+        <span>Page {currentPage} / {totalPages || 1}</span>
+        <button disabled={currentPage === totalPages || totalPages === 0} onClick={() => setCurrentPage(prev => prev + 1)}>Next</button>
       </div>
 
-      {/* Add/Edit Modal */}
       {showModal && (
         <div className="modal-backdrop" onClick={() => setShowModal(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
-            <h3>{editId ? 'Edit Employee' : 'Add Employee'}</h3>
-            <form onSubmit={handleAddOrUpdate}>
-              <input name="name" value={form.name} onChange={handleChange} placeholder="Name" />
-              <input name="empId" value={form.empId} onChange={handleChange} placeholder="ID" />
-              <input name="email" value={form.email} onChange={handleChange} placeholder="Email" />
-              <input name="phone" value={form.phone} onChange={handleChange} placeholder="Phone" />
-              <input name="department" value={form.department} onChange={handleChange} placeholder="Department" />
-              <input name="designation" value={form.designation} onChange={handleChange} placeholder="Designation" />
-              <input name="joinDate" type="date" value={form.joinDate} onChange={handleChange} />
-              <input name="salary" type="number" value={form.salary} onChange={handleChange} placeholder="Salary" />
-              <input type="file" accept=".csv" onChange={(e) => setCsvFile(e.target.files[0])} />
-              <button type="submit">Save</button>
-            </form>
-          </div>
-        </div>
-      )}
+            <h3>{editId ? 'Edit Payroll' : 'Compute Payroll'}</h3>
 
-      {/* View Employee Modal */}
-      {viewEmp && (
-        <div className="modal-backdrop" onClick={() => setViewEmp(null)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <h3>{viewEmp.name}'s Details</h3>
-            <p><b>ID:</b> {viewEmp.empId}</p>
-            <p><b>Email:</b> {viewEmp.email}</p>
-            <p><b>Phone:</b> {viewEmp.phone}</p>
-            <p><b>Department:</b> {viewEmp.department}</p>
-            <p><b>Designation:</b> {viewEmp.designation}</p>
-            <p><b>Join Date:</b> {new Date(viewEmp.joinDate).toLocaleDateString()}</p>
-            <p><b>Salary:</b> ₹{viewEmp.salary}</p>
-            <button onClick={() => setViewEmp(null)}>Close</button>
+            <form onSubmit={handleAddOrUpdate}>
+              <input name="name" value={form.name} onChange={handleChange} placeholder="Name" required />
+              <input name="empId" value={form.empId} onChange={handleChange} placeholder="Employee ID" required />
+              <input name="basic" type="number" value={form.basic} onChange={handleChange} placeholder="Basic Salary" required />
+              <input name="allowance" type="number" value={form.allowance} onChange={handleChange} placeholder="Allowance" required />
+              <input name="deduction" type="number" value={form.deduction} onChange={handleChange} placeholder="Deduction" required />
+              
+              <button type="button" onClick={calculateGrossNet}>Calculate</button>
+
+              <input name="gross" type="number" value={form.gross} readOnly placeholder="Gross Salary" />
+              <input name="net" type="number" value={form.net} readOnly placeholder="Net Salary" />
+              
+              <div className="modal-actions">
+                <button type="submit">{editId ? 'Update' : 'Save'}</button>
+                <button type="button" onClick={() => setShowModal(false)}>Cancel</button>
+              </div>
+            </form>
+
           </div>
         </div>
       )}
@@ -203,4 +177,4 @@ const Employees = () => {
   );
 };
 
-export default Employees;
+export default Payroll;

@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const User = require('./models/User');
 const Employee = require('./models/Employee');
 const Attendance = require('./models/Attendance');
+const Payroll = require('./models/Payroll');
 const multer = require('multer');
 const csv = require('csv-parser');
 const fs = require('fs');
@@ -309,5 +310,77 @@ app.delete('/api/employees/delete/:id', async (req, res) => {
     res.status(500).json({ msg: "Error deleting employee" });
   }
 });
+
+
+
+app.get('/api/payroll', async (req, res) => {
+  try {
+    const data = await Payroll.find();
+    res.status(200).json(data);
+  } catch (err) {
+    console.error("Get Payroll error:", err);
+    res.status(500).json({ msg: "Error fetching payroll" });
+  }
+});
+
+app.post('/api/payroll/add', async (req, res) => {
+  try {
+    const { name, empId, basic, allowance, deduction } = req.body;
+
+    const gross = Number(basic) + Number(allowance);
+    const net = gross - Number(deduction);
+
+    const newPayroll = new Payroll({
+      name,
+      empId,
+      basic,
+      allowance,
+      deduction,
+      gross,
+      net
+    });
+
+    await newPayroll.save();
+    res.status(201).json({ msg: "Payroll computed successfully", newPayroll });
+
+  } catch (err) {
+    console.error("Add Payroll error:", err);
+    res.status(500).json({ msg: "Error computing payroll" });
+  }
+});
+
+app.put('/api/payroll/update/:id', async (req, res) => {
+  try {
+    const { name, empId, basic, allowance, deduction } = req.body;
+
+    const gross = Number(basic) + Number(allowance);
+    const net = gross - Number(deduction);
+
+    const updated = await Payroll.findByIdAndUpdate(req.params.id, {
+      name, empId, basic, allowance, deduction, gross, net
+    }, { new: true });
+
+    res.status(200).json({ msg: "Payroll updated", updated });
+
+  } catch (err) {
+    console.error("Update Payroll error:", err);
+    res.status(500).json({ msg: "Error updating payroll" });
+  }
+});
+
+app.delete('/api/payroll/delete/:id', async (req, res) => {
+  try {
+    await Payroll.findByIdAndDelete(req.params.id);
+    res.status(200).json({ msg: "Payroll record deleted" });
+  } catch (err) {
+    console.error("Delete Payroll error:", err);
+    res.status(500).json({ msg: "Error deleting payroll" });
+  }
+});
+
+
+
+
+
 
 app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
