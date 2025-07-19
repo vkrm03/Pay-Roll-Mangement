@@ -1,201 +1,309 @@
+/* === Payroll Container === */
+.payroll-container {
+  padding: 2rem;
+  background-color: #f9fbfe;
+  border-radius: 12px;
+  max-width: 1200px;
+  margin: 2rem auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  position: relative;
+}
+
+/* === Title === */
 .payroll-container h2 {
   text-align: center;
-  margin-bottom: 25px;
-  color: #333;
+  margin-bottom: 1.5rem;
   font-size: 2rem;
+  color: #2d3748;
+}
+
+/* === Controls === */
+.payroll-controls {
+  display: grid;
+  grid-template-columns: 1fr 2fr auto auto auto;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 0 0.5rem;
+}
+
+.payroll-controls select,
+.payroll-controls input {
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.payroll-controls select:focus,
+.payroll-controls input:focus {
+  border-color: #2f80ed;
+  box-shadow: 0 0 0 2px rgba(47, 128, 237, 0.2);
+}
+
+.payroll-controls .compute-btn {
+  background-color: #27ae60;
+  color: #fff;
+  padding: 10px 16px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+  transition: all 0.3s ease;
+}
+
+.payroll-controls .compute-btn:hover {
+  background-color: #219653;
+  transform: translateY(-1px);
+}
+
+.payroll-controls .export-btn {
+  background-color: #2f80ed;
+  color: #fff;
+  padding: 10px 16px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.payroll-controls .export-btn:hover {
+  background-color: #1c63d4;
+  transform: translateY(-1px);
+}
+
+.payroll-controls .reset-btn {
+  background-color: #f0f0f0;
+  color: #333;
+  padding: 10px 16px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.payroll-controls .reset-btn:hover {
+  background-color: #e0e0e0;
+}
+
+/* === Payroll Table === */
+.payroll-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+
+.payroll-table th,
+.payroll-table td {
+  border: 1px solid #f0f0f0;
+  padding: 12px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.payroll-table th {
+  background-color: #2f80ed;
+  color: white;
   font-weight: 600;
 }
 
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.controls select,
-.controls input {
-  padding: 10px 15px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  min-width: 150px;
-  font-size: 0.95rem;
-  outline: none;
-  transition: border 0.2s ease;
-}
-
-.controls input:focus,
-.controls select:focus {
-  border-color: #2F80ED;
-}
-
-.controls button {
-  padding: 10px 18px;
-  border-radius: 8px;
-  background: #2F80ED;
-  color: #fff;
+.payroll-table td button {
+  background: none;
   border: none;
+  font-size: 1.1rem;
   cursor: pointer;
-  font-weight: 500;
-  transition: background 0.2s ease;
 }
 
-.controls button:hover {
-  background: #3730a3;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 15px;
-  background: #fff;
-  border-radius: 15px;
-  overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
-
-thead {
-  background: #2F80ED;
-  color: #fff;
-}
-
-thead th {
-  padding: 14px;
-  text-align: center;
-  font-weight: 500;
-}
-
-tbody tr {
-  border-bottom: 1px solid #eee;
-}
-
-tbody td {
-  padding: 12px;
-  text-align: center;
-  color: #333;
-}
-
-tbody tr:hover {
-  background: #f9f9f9;
-}
-
-tbody button {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 6px;
-  background: #10b981;
-  color: #fff;
-  cursor: pointer;
-  font-size: 0.85rem;
-  transition: background 0.2s ease;
-}
-
-tbody button:hover {
-  background: #059669;
+.payroll-table td button:hover {
+  color: #1c63d4;
 }
 
 /* === Pagination === */
-.pagination {
-  margin-top: 20px;
+.payroll-pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 15px;
+  gap: 1rem;
+  margin-top: 1.5rem;
 }
 
-.pagination button {
-  padding: 8px 14px;
-  border-radius: 8px;
+.payroll-pagination button {
+  padding: 8px 16px;
   border: none;
-  background: #2F80ED;
+  border-radius: 8px;
+  background-color: #2f80ed;
   color: #fff;
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.2s ease;
+  font-size: 14px;
+  transition: all 0.3s ease;
 }
 
-.pagination button:disabled {
-  background: #a5b4fc;
+.payroll-pagination button:disabled {
+  background-color: #ccc;
   cursor: not-allowed;
 }
 
 /* === Modal === */
-.modal-backdrop {
+.payroll-modal-backdrop {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(4px);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 999;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.25s ease-out;
 }
 
-.modal {
-  background: #fff;
-  padding: 25px 30px;
-  border-radius: 15px;
-  width: 100%;
-  max-width: 400px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-  animation: popup 0.3s ease forwards;
+.payroll-modal {
+  background: #ffffff;
+  padding: 2rem 2.5rem;
+  border-radius: 16px;
+  width: 600px;
+  max-height: 100vh;
+  overflow-y: auto;
+  max-width: 95%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  animation: scaleIn 0.3s ease;
 }
 
-@keyframes popup {
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
   from { transform: scale(0.9); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
 
-.modal h3 {
-  margin-bottom: 20px;
-  text-align: center;
-  color: #2F80ED;
-  font-weight: 600;
-}
-
 /* === Modal Form === */
-.modal form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.payroll-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
 }
 
-.modal input {
-  padding: 10px;
-  border-radius: 8px;
+.payroll-form input {
+  padding: 14px 16px;
+  font-size: 15px;
   border: 1px solid #ccc;
-  font-size: 0.95rem;
-  transition: border 0.2s ease;
+  border-radius: 10px;
+  background-color: #fefefe;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
 }
 
-.modal input:focus {
-  border-color: #2F80ED;
+.payroll-form input:focus {
+  border-color: #2f80ed;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(47, 128, 237, 0.15);
+  outline: none;
 }
 
-.modal button {
-  padding: 10px;
-  background: #2F80ED;
-  color: #fff;
+/* === Modal Actions === */
+.payroll-modal-actions {
+  grid-column: span 2;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.8rem;
+}
+
+.payroll-modal-actions button {
+  padding: 10px 22px;
   border: none;
   border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
-  font-weight: 500;
-  transition: background 0.2s ease;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
 }
 
-.modal button:hover {
-  background: #3730a3;
+.payroll-modal-actions button[type="submit"] {
+  background-color: #2f80ed;
+  color: #fff;
+}
+
+.payroll-modal-actions button[type="submit"]:hover {
+  background-color: #1c63d4;
+}
+
+.payroll-modal-actions button[type="button"] {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.payroll-modal-actions button[type="button"]:hover {
+  background-color: #e0e0e0;
 }
 
 /* === Responsive === */
-@media (max-width: 768px) {
-  .controls {
-    flex-direction: column;
-    gap: 8px;
+@media (max-width: 1024px) {
+  .payroll-controls {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 0.8rem;
   }
 
-  .modal {
-    max-width: 90%;
+  .payroll-controls .compute-btn,
+  .payroll-controls .export-btn,
+  .payroll-controls .reset-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .payroll-form {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .payroll-modal {
+    padding: 1.5rem;
+    width: 95%;
+  }
+
+  .payroll-modal-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+  }
+
+  .payroll-modal-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .payroll-controls {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .payroll-controls select,
+  .payroll-controls input,
+  .payroll-controls .compute-btn,
+  .payroll-controls .export-btn,
+  .payroll-controls .reset-btn {
+    width: 100%;
+  }
+
+  .payroll-form {
+    grid-template-columns: 1fr;
+  }
+
+  .payroll-modal {
+    padding: 1.2rem;
   }
 }

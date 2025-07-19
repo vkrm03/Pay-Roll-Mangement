@@ -98,7 +98,7 @@ const Payroll = () => {
     <div className="payroll-container">
       <h2>Payroll Computation</h2>
 
-      <div className="controls">
+      <div className="payroll-controls">
         <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
           <option value="name">Name</option>
           <option value="empId">Employee ID</option>
@@ -110,12 +110,12 @@ const Payroll = () => {
           placeholder={`Search by ${searchType}`}
         />
 
-        <button onClick={openAddModal}>+ Compute Payroll</button>
-        <button onClick={handleExport}>Export CSV</button>
-        <button onClick={() => { setSearchTerm(""); setCurrentPage(1); }}>Reset</button>
+        <button className="compute-btn" onClick={openAddModal}>+ Compute Payroll</button>
+        <button className="export-btn" onClick={handleExport}>Export CSV</button>
+        <button className="reset-btn" onClick={() => { setSearchTerm(""); setCurrentPage(1); }}>Reset</button>
       </div>
 
-      <table>
+      <table className="payroll-table">
         <thead>
           <tr>
             <th>Name</th><th>ID</th><th>Basic</th><th>Allowance</th><th>Deduction</th><th>Gross</th><th>Net</th><th>Actions</th>
@@ -132,7 +132,7 @@ const Payroll = () => {
               <td>₹{p.gross}</td>
               <td>₹{p.net}</td>
               <td>
-                <button onClick={() => { setForm(p); setEditId(p._id); setShowModal(true); }}>Edit</button>
+                <button onClick={() => { setForm(p); setEditId(p._id); setShowModal(true); }}>✏️</button>
               </td>
             </tr>
           )) : (
@@ -141,18 +141,18 @@ const Payroll = () => {
         </tbody>
       </table>
 
-      <div className="pagination">
+      <div className="payroll-pagination">
         <button disabled={currentPage === 1} onClick={() => setCurrentPage(prev => prev - 1)}>Prev</button>
         <span>Page {currentPage} / {totalPages || 1}</span>
         <button disabled={currentPage === totalPages || totalPages === 0} onClick={() => setCurrentPage(prev => prev + 1)}>Next</button>
       </div>
 
       {showModal && (
-        <div className="modal-backdrop" onClick={() => setShowModal(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="payroll-modal-backdrop" onClick={() => setShowModal(false)}>
+          <div className="payroll-modal" onClick={e => e.stopPropagation()}>
             <h3>{editId ? 'Edit Payroll' : 'Compute Payroll'}</h3>
 
-            <form onSubmit={handleAddOrUpdate}>
+            <form onSubmit={handleAddOrUpdate} className="payroll-form">
               <input name="name" value={form.name} onChange={handleChange} placeholder="Name" required />
               <input name="empId" value={form.empId} onChange={handleChange} placeholder="Employee ID" required />
               <input name="basic" type="number" value={form.basic} onChange={handleChange} placeholder="Basic Salary" required />
@@ -164,7 +164,7 @@ const Payroll = () => {
               <input name="gross" type="number" value={form.gross} readOnly placeholder="Gross Salary" />
               <input name="net" type="number" value={form.net} readOnly placeholder="Net Salary" />
               
-              <div className="modal-actions">
+              <div className="payroll-modal-actions">
                 <button type="submit">{editId ? 'Update' : 'Save'}</button>
                 <button type="button" onClick={() => setShowModal(false)}>Cancel</button>
               </div>

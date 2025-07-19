@@ -338,7 +338,7 @@ app.post('/api/payroll/add', async (req, res) => {
     const net = gross - Number(deduction);
 
     const newPayroll = new Payroll({
-      name: employee.name,  // From Employee DB
+      name: employee.name,
       empId: employee.empId,
       basic,
       allowance,
