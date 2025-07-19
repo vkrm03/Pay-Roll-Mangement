@@ -16,6 +16,7 @@ const Payroll = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [bulkModal, setBulkModal] = useState(false);
   const [csvFile, setCsvFile] = useState(null);
+  const [sortType, setSortType] = useState("");
   const perPage = 8;
 
   useEffect(() => {
@@ -90,13 +91,27 @@ const Payroll = () => {
     }
   };
 
+  // ===== Filtering & Sorting Logic =====
   const filtered = payrolls.filter(p =>
     p[searchType]?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalPages = Math.ceil(filtered.length / perPage);
-  const displayed = filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
+  const sorted = [...filtered];
 
+  if (sortType === "name-asc") {
+    sorted.sort((a, b) => a.name.localeCompare(b.name));
+  } else if (sortType === "name-desc") {
+    sorted.sort((a, b) => b.name.localeCompare(a.name));
+  } else if (sortType === "net-desc") {
+    sorted.sort((a, b) => (b.net || 0) - (a.net || 0));
+  } else if (sortType === "net-asc") {
+    sorted.sort((a, b) => (a.net || 0) - (b.net || 0));
+  }
+
+  const totalPages = Math.ceil(sorted.length / perPage);
+  const displayed = sorted.slice((currentPage - 1) * perPage, currentPage * perPage);
+
+  // ===== CSV Export =====
   const handleExport = () => {
     const headers = ["Name", "ID", "Basic", "Allowance", "Deduction", "Gross", "Net"];
     const rows = payrolls.map(p => [
@@ -118,6 +133,14 @@ const Payroll = () => {
       <h2>Payroll Computation</h2>
 
       <div className="payroll-controls">
+        <select value={sortType} onChange={(e) => { setSortType(e.target.value); setCurrentPage(1); }} className="sort-dropdown">
+          <option value="">Sort By</option>
+          <option value="name-asc">Name (A-Z)</option>
+          <option value="name-desc">Name (Z-A)</option>
+          <option value="net-desc">Net Salary (High to Low)</option>
+          <option value="net-asc">Net Salary (Low to High)</option>
+        </select>
+
         <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
           <option value="name">Name</option>
           <option value="empId">Employee ID</option>
@@ -125,13 +148,12 @@ const Payroll = () => {
 
         <input
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
           placeholder={`Search by ${searchType}`}
         />
 
         <button className="compute-btn" onClick={openBulkModal}>Compute Bulk Payroll</button>
         <button className="export-btn" onClick={handleExport}>Export CSV</button>
-        <button className="reset-btn" onClick={() => { setSearchTerm(""); setCurrentPage(1); }}>Reset</button>
       </div>
 
       <table className="payroll-table">
