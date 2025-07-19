@@ -327,7 +327,6 @@ app.post('/api/payroll/add', async (req, res) => {
   try {
     const { empId, basic, allowance, deduction } = req.body;
 
-    // Fetch employee first
     const employee = await Employee.findOne({ empId });
 
     if (!employee) {
@@ -395,6 +394,46 @@ app.delete('/api/payroll/delete/:id', async (req, res) => {
 
 
 
+app.get('/api/payroll/merged', async (req, res) => {
+  try {
+    const employees = await Employee.find();
+    const payrolls = await Payroll.find();
+
+    // Map payrolls by empId for quick lookup
+    const payrollMap = {};
+    payrolls.forEach(p => {
+      payrollMap[p.empId] = p;
+    });
+
+    const merged = employees.map(emp => {
+      const p = payrollMap[emp.empId];
+
+      return {
+        name: emp.name,
+        empId: emp.empId,
+        email: emp.email,
+        department: emp.department,
+        designation: emp.designation,
+        salary: emp.salary,
+        joinDate: emp.joinDate,
+        _id: p?._id || null,  // Use payroll ID if exists
+
+        // Payroll Fields (null if not computed yet)
+        basic: p?.basic || null,
+        allowance: p?.allowance || null,
+        deduction: p?.deduction || null,
+        gross: p?.gross || null,
+        net: p?.net || null
+      };
+    });
+
+    res.status(200).json(merged);
+
+  } catch (err) {
+    console.error("Merged Payroll error:", err);
+    res.status(500).json({ msg: "Error merging payroll with employees" });
+  }
+});
 
 
 

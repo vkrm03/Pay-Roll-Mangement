@@ -16,18 +16,19 @@ const Payroll = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const perPage = 5;
 
-  useEffect(() => {
-    fetchPayrolls();
-  }, []);
+ useEffect(() => {
+  fetchMergedPayroll();
+}, []);
 
-  const fetchPayrolls = async () => {
-    try {
-      const res = await axios.get(`${api}payroll`);
-      setPayrolls(res.data);
-    } catch (err) {
-      toast.error('Failed to fetch payrolls');
-    }
-  };
+const fetchMergedPayroll = async () => {
+  try {
+    const res = await axios.get(`${api}payroll/merged`);
+    setPayrolls(res.data);
+  } catch (err) {
+    toast.error('Failed to fetch payrolls');
+  }
+};
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -132,7 +133,7 @@ const Payroll = () => {
               <td>₹{p.gross}</td>
               <td>₹{p.net}</td>
               <td>
-                <button onClick={() => { setForm(p); setEditId(p._id); setShowModal(true); }}>✏️</button>
+                <button onClick={() => { setForm(p); setEditId(p._id); setShowModal(true); }}><i className="fa-solid fa-pencil"></i></button>
               </td>
             </tr>
           )) : (
