@@ -14,6 +14,8 @@ const Payroll = () => {
   const [searchType, setSearchType] = useState("name");
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [bulkModal, setBulkModal] = useState(false);
+  const [csvFile, setCsvFile] = useState(null);
   const perPage = 5;
 
  useEffect(() => {
@@ -45,11 +47,11 @@ const fetchMergedPayroll = async () => {
     setForm(prev => ({ ...prev, gross, net }));
   };
 
-  const openAddModal = () => {
-    setForm({ name: '', empId: '', basic: '', allowance: '', deduction: '', gross: '', net: '' });
-    setEditId(null);
-    setShowModal(true);
-  };
+const openBulkModal = () => {
+  setBulkModal(true);
+};
+
+
 
   const handleAddOrUpdate = async (e) => {
     e.preventDefault();
@@ -71,6 +73,28 @@ const fetchMergedPayroll = async () => {
       toast.error('Failed to save payroll');
     }
   };
+
+  const handleBulkPayrollUpload = async () => {
+  if (!csvFile) {
+    toast.error("Please select a CSV file");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('file', csvFile);
+
+  try {
+    await axios.post(`${api}payroll/bulk`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    toast.success("Bulk payroll computed successfully");
+    setBulkModal(false);
+    fetchMergedPayroll();  // refresh table
+  } catch (err) {
+    toast.error("Error uploading bulk payroll");
+  }
+};
+
 
   const filtered = payrolls.filter(p =>
     p[searchType]?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -111,7 +135,7 @@ const fetchMergedPayroll = async () => {
           placeholder={`Search by ${searchType}`}
         />
 
-        <button className="compute-btn" onClick={openAddModal}>+ Compute Payroll</button>
+        <button className="compute-btn" onClick={openBulkModal}>Compute Bulk Payroll</button>
         <button className="export-btn" onClick={handleExport}>Export CSV</button>
         <button className="reset-btn" onClick={() => { setSearchTerm(""); setCurrentPage(1); }}>Reset</button>
       </div>
@@ -174,6 +198,51 @@ const fetchMergedPayroll = async () => {
           </div>
         </div>
       )}
+
+
+
+{bulkModal && (
+  <div className="payroll-modal-backdrop" onClick={() => setBulkModal(false)}>
+    <div className="payroll-modal bulk-upload-container" onClick={e => e.stopPropagation()}>
+      <h3>Bulk Payroll Upload</h3>
+      <p>Upload CSV: Columns should be <b>empId, basic, allowance, deduction</b></p>
+
+      <a href="/samplePayroll.csv" download className="sample-download">
+        ⬇️ Download Sample CSV
+      </a>
+
+      <div
+        className="drag-area"
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => {
+          e.preventDefault();
+          setCsvFile(e.dataTransfer.files[0]);
+          toast.success(`Selected: ${e.dataTransfer.files[0].name}`);
+        }}
+        onClick={() => document.getElementById('bulkFileInput').click()}
+      >
+        <p>{csvFile ? csvFile.name : "Drag & Drop CSV here or click to browse"}</p>
+      </div>
+
+      <input
+        id="bulkFileInput"
+        type="file"
+        accept=".csv"
+        style={{ display: 'none' }}
+        onChange={(e) => setCsvFile(e.target.files[0])}
+      />
+
+      <div className="bulk-upload-actions">
+        <button onClick={handleBulkPayrollUpload}>Upload</button>
+        <button onClick={() => setBulkModal(false)}>Cancel</button>
+      </div>
+    </div>
+  </div>
+)}
+
+      
+
+
     </div>
   );
 };

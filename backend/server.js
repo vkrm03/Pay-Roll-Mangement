@@ -436,6 +436,53 @@ app.get('/api/payroll/merged', async (req, res) => {
 });
 
 
+// Add to server.js
+app.post('/api/payroll/bulk', upload.single('file'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ msg: 'No file uploaded' });
+
+  const filePath = path.join(__dirname, req.file.path);
+  const results = [];
+
+  try {
+    fs.createReadStream(filePath)
+      .pipe(csv())
+      .on('data', (row) => {
+        if (row.empId) {
+          const basic = Number(row.basic || 0);
+          const allowance = Number(row.allowance || 0);
+          const deduction = Number(row.deduction || 0);
+          const gross = basic + allowance;
+          const net = gross - deduction;
+
+          results.push({ ...row, basic, allowance, deduction, gross, net });
+        }
+      })
+      .on('end', async () => {
+        for (const row of results) {
+          const emp = await Employee.findOne({ empId: row.empId });
+          if (!emp) continue;
+
+          await Payroll.create({
+            name: emp.name,
+            empId: emp.empId,
+            basic: row.basic,
+            allowance: row.allowance,
+            deduction: row.deduction,
+            gross: row.gross,
+            net: row.net
+          });
+        }
+
+        fs.unlinkSync(filePath);
+        res.status(201).json({ msg: "Bulk payroll uploaded" });
+      });
+  } catch (err) {
+    console.error("Bulk Payroll Upload Error:", err);
+    res.status(500).json({ msg: 'Server error during bulk upload' });
+  }
+});
+
+
 
 
 app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
