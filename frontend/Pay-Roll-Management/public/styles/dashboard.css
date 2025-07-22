@@ -1,180 +1,43 @@
-.dashboard {
-  padding: 2rem;
-  font-family: 'Inter', sans-serif;
+.dashboard-container {
+  padding: 40px;
+  background: #f8fafc;
 }
 
-.payrun-banner {
-  border: 1px solid #e5e7eb;
-  padding: 1rem;
-  border-radius: 12px;
-  margin-bottom: 1.5rem;
-  background-color: #f9fafb;
-}
-
-.payrun-banner .badge {
-  font-size: 0.75rem;
-  padding: 2px 8px;
-  background-color: #facc15;
-  border-radius: 4px;
-  margin-left: 0.5rem;
-}
-
-.payrun-info {
+.stats-grid {
   display: flex;
-  gap: 2rem;
-  margin-top: 1rem;
-  align-items: center;
+  gap: 20px;
+  margin-bottom: 40px;
 }
 
-.payrun-info > div {
+.stat-card {
   flex: 1;
-}
-
-.payrun-info button {
-  background: #111827;
-  color: white;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.kpi-cards {
-  display: flex;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-  margin-top: 1rem;
-  flex-wrap: wrap;
-}
-
-.kpi-card {
-  background: #f3f4f6;
-  padding: 1rem;
-  border-radius: 10px;
-  flex: 1 1 200px;
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   text-align: center;
+  transition: transform 0.2s ease;
 }
 
-.kpi-card h4 {
-  color: #374151;
-  margin-bottom: 0.5rem;
+.stat-card:hover {
+  transform: translateY(-3px);
 }
 
-.kpi-card p {
-  font-weight: bold;
+.stat-card h4 {
   font-size: 1.2rem;
+  color: #374151;
+  margin-bottom: 10px;
 }
 
-.kpi-card a {
-  font-size: 0.9rem;
-  color: #3b82f6;
-  text-decoration: none;
-}
-
-.tasks-section {
-  margin-bottom: 2rem;
-}
-
-.tasks-section h3 {
-  margin-bottom: 1rem;
-}
-
-.tasks-section ul {
-  list-style: none;
-  padding: 0;
-}
-
-.tasks-section li {
-  background: #fef3c7;
-  padding: 0.8rem 1rem;
-  margin-bottom: 0.5rem;
-  border-radius: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.tasks-section button {
-  background-color: #3b82f6;
-  border: none;
-  color: white;
-  padding: 4px 10px;
-  border-radius: 5px;
-  cursor: pointer;
+.stat-card p {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #111827;
 }
 
 .chart-section {
-  margin-top: 2rem;
-}
-
-
-
-
-@media (max-width: 1024px) {
-  .dashboard {
-    padding: 1.5rem 1rem;
-  }
-
-  .payrun-info {
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  .payrun-info > div {
-    flex: 1 1 100%;
-  }
-
-  .payrun-info button {
-    width: 100%;
-    margin-top: 1rem;
-  }
-
-  .kpi-cards {
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  .kpi-card {
-    flex: 1 1 45%;
-  }
-
-  .tasks-section ul {
-    padding: 0;
-  }
-}
-
-@media (max-width: 600px) {
-  .dashboard {
-    padding: 1rem;
-  }
-
-  .payrun-info {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .payrun-info > div,
-  .payrun-info button {
-    width: 100%;
-  }
-
-  .kpi-card {
-    flex: 1 1 100%;
-    text-align: left;
-  }
-
-  .tasks-section li {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .chart-section h3 {
-    font-size: 1.1rem;
-  }
-
-  canvas {
-    max-width: 100% !important;
-    height: auto !important;
-  }
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }

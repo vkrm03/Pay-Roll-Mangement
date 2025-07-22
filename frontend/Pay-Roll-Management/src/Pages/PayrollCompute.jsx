@@ -213,9 +213,8 @@ const Payroll = () => {
     onClick={handleSampleDownload} 
     style={{ 
       color: "#2F80ED", 
-      textDecoration: "underline", 
       cursor: "pointer", 
-      marginLeft: "10px" 
+      marginLeft: "4px" 
     }}
   >Download Sample </span>
 </p>
