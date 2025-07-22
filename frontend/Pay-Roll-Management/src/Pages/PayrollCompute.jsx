@@ -183,52 +183,53 @@ const Payroll = () => {
         <button disabled={currentPage === totalPages || totalPages === 0} onClick={() => setCurrentPage(prev => prev + 1)}>Next</button>
       </div>
 
-      {bulkModal && (
-        <div className="modal-backdrop" onClick={() => setBulkModal(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <h3>Bulk Payroll Computation</h3>
-            <p>Upload CSV: <b>empId, basic, allowance, deduction</b></p>
+{bulkModal && (
+  <div className="bulk-modal-backdrop" onClick={() => setBulkModal(false)}>
+    <div className="bulk-modal" onClick={e => e.stopPropagation()}>
+      <h3>Bulk Payroll Computation</h3>
+      <p>Upload CSV: <b>empId, basic, allowance, deduction</b></p>
 
-            <div
-              className="drop-zone"
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => {
-                e.preventDefault();
-                const file = e.dataTransfer.files[0];
-                if (file && file.name.endsWith(".csv")) {
-                  setCsvFile(file);
-                  toast.success(`Selected: ${file.name}`);
-                } else {
-                  toast.error("Only CSV files are allowed");
-                }
-              }}
-              onClick={() => document.getElementById('csv-upload-payroll').click()}
-            >
-              {csvFile ? <p>Selected: <strong>{csvFile.name}</strong></p> : <p>Drag & Drop CSV here or Browse</p>}
-            </div>
+      <div
+        className="bulk-drag-zone"
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => {
+          e.preventDefault();
+          const file = e.dataTransfer.files[0];
+          if (file && file.name.endsWith(".csv")) {
+            setCsvFile(file);
+            toast.success(`Selected: ${file.name}`);
+          } else {
+            toast.error("Only CSV files are allowed");
+          }
+        }}
+        onClick={() => document.getElementById('csv-upload-payroll').click()}
+      >
+        <p>{csvFile ? <span className="bulk-file-name">{csvFile.name}</span> : "Drag & Drop CSV here or Click to Browse"}</p>
+      </div>
 
-            <input
-              type="file"
-              id="csv-upload-payroll"
-              accept=".csv"
-              style={{ display: 'none' }}
-              onChange={(e) => {
-                const file = e.target.files[0];
-                if (file && file.name.endsWith(".csv")) {
-                  setCsvFile(file);
-                } else {
-                  toast.error("Only CSV files are allowed");
-                }
-              }}
-            />
+      <input
+        type="file"
+        id="csv-upload-payroll"
+        accept=".csv"
+        style={{ display: 'none' }}
+        onChange={(e) => {
+          const file = e.target.files[0];
+          if (file && file.name.endsWith(".csv")) {
+            setCsvFile(file);
+          } else {
+            toast.error("Only CSV files are allowed");
+          }
+        }}
+      />
 
-            <div className="modal-actions">
-              <button onClick={handleBulkPayrollUpload}>Upload</button>
-              <button onClick={() => setBulkModal(false)}>Cancel</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <div className="bulk-modal-actions">
+        <button className="upload-btn" onClick={handleBulkPayrollUpload}>Upload</button>
+        <button className="cancel-btn" onClick={() => setBulkModal(false)}>Cancel</button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
