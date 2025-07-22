@@ -37,6 +37,25 @@ const Payroll = () => {
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleSampleDownload = () => {
+  const headers = ["empId", "basic", "allowance", "deduction"];
+  const sampleRows = [
+    ["E101", "25000", "5000", "2000"],
+    ["E102", "30000", "6000", "2500"]
+  ];
+
+  const csvContent = [headers, ...sampleRows].map(e => e.join(",")).join("\n");
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = "sample_bulk_payroll.csv";
+  link.click();
+  URL.revokeObjectURL(url);
+};
+
+
   const calculateGrossNet = () => {
     const basic = Number(form.basic) || 0;
     const allowance = Number(form.allowance) || 0;
@@ -187,7 +206,20 @@ const Payroll = () => {
   <div className="bulk-modal-backdrop" onClick={() => setBulkModal(false)}>
     <div className="bulk-modal" onClick={e => e.stopPropagation()}>
       <h3>Bulk Payroll Computation</h3>
-      <p>Upload CSV: <b>empId, basic, allowance, deduction</b></p>
+      <p>
+  Upload CSV: <b>empId, basic, allowance, deduction</b> 
+  &nbsp; 
+  <span 
+    onClick={handleSampleDownload} 
+    style={{ 
+      color: "#2F80ED", 
+      textDecoration: "underline", 
+      cursor: "pointer", 
+      marginLeft: "10px" 
+    }}
+  >Download Sample </span>
+</p>
+
 
       <div
         className="bulk-drag-zone"

@@ -436,7 +436,6 @@ app.get('/api/payroll/merged', async (req, res) => {
 });
 
 
-// Add to server.js
 app.post('/api/payroll/bulk', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ msg: 'No file uploaded' });
 
