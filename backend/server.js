@@ -323,38 +323,42 @@
     }
   });
 
-  app.post('/api/payroll/add', async (req, res) => {
-    try {
-      const { empId, basic, allowance, deduction } = req.body;
+app.post('/api/payroll/add', async (req, res) => {
+  try {
+    const { empId, basic, allowance, deduction } = req.body;
 
-      const employee = await Employee.findOne({ empId });
+    const employee = await Employee.findOne({ empId });
 
-      if (!employee) {
-        return res.status(404).json({ msg: "Employee not found with this ID" });
-      }
-
-      const gross = Number(basic) + Number(allowance);
-      const net = gross - Number(deduction);
-
-      const newPayroll = new Payroll({
-        name: employee.name,
-        empId: employee.empId,
-        basic,
-        allowance,
-        deduction,
-        gross,
-        net
-      });
-
-      await newPayroll.save();
-
-      res.status(201).json({ msg: "Payroll computed successfully", newPayroll });
-
-    } catch (err) {
-      console.error("Add Payroll error:", err);
-      res.status(500).json({ msg: "Error computing payroll" });
+    if (!employee) {
+      return res.status(404).json({ msg: "Employee not found with this ID" });
     }
-  });
+
+    const gross = Number(basic) + Number(allowance);
+    const net = gross - Number(deduction);
+
+    const newPayroll = new Payroll({
+      name: employee.name,
+      empId: employee.empId,
+      basic,
+      allowance,
+      deduction,
+      gross,
+      net
+    });
+
+    await newPayroll.save();
+
+    employee.salary = net;
+    await employee.save();
+
+    res.status(201).json({ msg: "Payroll computed and employee salary updated", newPayroll });
+
+  } catch (err) {
+    console.error("Add Payroll error:", err);
+    res.status(500).json({ msg: "Error computing payroll" });
+  }
+});
+
 
   app.put('/api/payroll/update/:id', async (req, res) => {
     try {
@@ -436,53 +440,55 @@
   });
 
 
-  app.post('/api/payroll/bulk', upload.single('file'), async (req, res) => {
-    if (!req.file) return res.status(400).json({ msg: 'No file uploaded' });
+app.post('/api/payroll/bulk', upload.single('file'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ msg: 'No file uploaded' });
 
-    const filePath = path.join(__dirname, req.file.path);
-    const results = [];
+  const filePath = path.join(__dirname, req.file.path);
+  const results = [];
 
-    try {
-      fs.createReadStream(filePath)
-        .pipe(csv())
-        .on('data', (row) => {
-          if (row.empId) {
-            const basic = Number(row.basic || 0);
-            const allowance = Number(row.allowance || 0);
-            const deduction = Number(row.deduction || 0);
-            const gross = basic + allowance;
-            const net = gross - deduction;
+  try {
+    fs.createReadStream(filePath)
+      .pipe(csv())
+      .on('data', (row) => {
+        if (row.empId) {
+          const basic = Number(row.basic || 0);
+          const allowance = Number(row.allowance || 0);
+          const deduction = Number(row.deduction || 0);
+          const gross = basic + allowance;
+          const net = gross - deduction;
 
-            results.push({ ...row, basic, allowance, deduction, gross, net });
-          }
-        })
-        .on('end', async () => {
-          for (const row of results) {
-            const emp = await Employee.findOne({ empId: row.empId });
-            if (!emp) continue;
+          results.push({ ...row, basic, allowance, deduction, gross, net });
+        }
+      })
+      .on('end', async () => {
+        for (const row of results) {
+          const emp = await Employee.findOne({ empId: row.empId });
+          if (!emp) continue;
 
-            await Payroll.create({
-              name: emp.name,
-              empId: emp.empId,
-              basic: row.basic,
-              allowance: row.allowance,
-              deduction: row.deduction,
-              gross: row.gross,
-              net: row.net
-            });
-          }
+          await Payroll.create({
+            name: emp.name,
+            empId: emp.empId,
+            basic: row.basic,
+            allowance: row.allowance,
+            deduction: row.deduction,
+            gross: row.gross,
+            net: row.net
+          });
 
-          fs.unlinkSync(filePath);
-          res.status(201).json({ msg: "Bulk payroll uploaded" });
-        });
-    } catch (err) {
-      console.error("Bulk Payroll Upload Error:", err);
-      res.status(500).json({ msg: 'Server error during bulk upload' });
-    }
-  });
+          // 💰 Update employee's salary to net
+          emp.salary = row.net;
+          await emp.save();
+        }
 
+        fs.unlinkSync(filePath);
+        res.status(201).json({ msg: "Bulk payroll processed & salaries updated" });
+      });
 
-
+  } catch (err) {
+    console.error("Bulk Payroll Upload Error:", err);
+    res.status(500).json({ msg: 'Server error during bulk upload' });
+  }
+});
 
 
 
@@ -504,7 +510,7 @@ app.get('/api/payroll/summary', async (req, res) => {
       totalEmployees: employees.length,
       totalNet,
       totalDeduction,
-      last5Payrolls: payrolls.slice(-5).reverse() // recent 5
+      last5Payrolls: payrolls.slice(-5).reverse()
     });
 
   } catch (err) {
