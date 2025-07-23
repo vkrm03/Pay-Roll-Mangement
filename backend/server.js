@@ -400,44 +400,56 @@ app.post('/api/payroll/add', async (req, res) => {
 
 
 
-  app.get('/api/payroll/merged', async (req, res) => {
-    try {
-      const employees = await Employee.find();
-      const payrolls = await Payroll.find();
+app.get('/api/payroll/merged', async (req, res) => {
+  try {
+    const { year, month } = req.query;
 
-      const payrollMap = {};
-      payrolls.forEach(p => {
-        payrollMap[p.empId] = p;
-      });
+    const employees = await Employee.find();
 
-      const merged = employees.map(emp => {
-        const p = payrollMap[emp.empId];
-
-        return {
-          name: emp.name,
-          empId: emp.empId,
-          email: emp.email,
-          department: emp.department,
-          designation: emp.designation,
-          salary: emp.salary,
-          joinDate: emp.joinDate,
-          _id: p?._id || null,
-
-          basic: p?.basic || null,
-          allowance: p?.allowance || null,
-          deduction: p?.deduction || null,
-          gross: p?.gross || null,
-          net: p?.net || null
-        };
-      });
-
-      res.status(200).json(merged);
-
-    } catch (err) {
-      console.error("Merged Payroll error:", err);
-      res.status(500).json({ msg: "Error merging payroll with employees" });
+    const payrollFilter = {};
+    if (year && month) {
+      payrollFilter.year = parseInt(year);
+      payrollFilter.month = month.padStart(2, '0'); // ensure format like "08"
     }
-  });
+
+    const payrolls = await Payroll.find(payrollFilter);
+
+    const payrollMap = {};
+    payrolls.forEach(p => {
+      payrollMap[p.empId] = p;
+    });
+
+    const merged = employees.map(emp => {
+      const p = payrollMap[emp.empId];
+
+      return {
+        name: emp.name,
+        empId: emp.empId,
+        email: emp.email,
+        department: emp.department,
+        designation: emp.designation,
+        salary: emp.salary,
+        joinDate: emp.joinDate,
+        _id: p?._id || null,
+
+        basic: p?.basic || null,
+        allowance: p?.allowance || null,
+        deduction: p?.deduction || null,
+        gross: p?.gross || null,
+        net: p?.net || null,
+        month: p?.month || null,
+        year: p?.year || null
+      };
+    });
+
+    res.status(200).json(merged);
+
+  } catch (err) {
+    console.error("Merged Payroll error:", err);
+    res.status(500).json({ msg: "Error merging payroll with employees" });
+  }
+});
+
 
 
 app.post('/api/payroll/bulk', upload.single('file'), async (req, res) => {

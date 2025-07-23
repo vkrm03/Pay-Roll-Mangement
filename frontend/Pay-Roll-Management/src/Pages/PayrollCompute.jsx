@@ -29,8 +29,8 @@ const Payroll = () => {
   const perPage = 8;
 
   useEffect(() => {
-    fetchMergedPayroll();
-  }, []);
+  fetchMergedPayroll();
+}, [selectedMonth]);
 
   const fetchMergedPayroll = async () => {
   try {
