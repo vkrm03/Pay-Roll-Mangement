@@ -19,7 +19,11 @@ const Payroll = () => {
   const [sortType, setSortType] = useState("");
   const [selectedMonth, setSelectedMonth] = useState(() => {
   const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`; // "2025-07"
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+});
+  const [bulkMonth, setBulkMonth] = useState(() => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 });
 
   const perPage = 8;
@@ -29,13 +33,15 @@ const Payroll = () => {
   }, []);
 
   const fetchMergedPayroll = async () => {
-    try {
-      const res = await axios.get(`${api}payroll/merged`);
-      setPayrolls(res.data);
-    } catch (err) {
-      toast.error('Failed to fetch payrolls');
-    }
-  };
+  try {
+    const [year, month] = selectedMonth.split("-");
+    const res = await axios.get(`${api}payroll/merged?year=${year}&month=${month}`);
+    setPayrolls(res.data);
+  } catch (err) {
+    toast.error('Failed to fetch payrolls');
+  }
+};
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -96,26 +102,36 @@ const Payroll = () => {
     }
   };
 
-  const handleBulkPayrollUpload = async () => {
-    if (!csvFile) {
-      toast.error("Please select a CSV file");
-      return;
-    }
+const handleBulkPayrollUpload = async () => {
+  if (!csvFile) {
+    toast.error("Please select a CSV file");
+    return;
+  }
 
-    const formData = new FormData();
-    formData.append('file', csvFile);
+  if (!bulkMonth) {
+    toast.error("Please select a Month");
+    return;
+  }
 
-    try {
-      await axios.post(`${api}payroll/bulk`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      toast.success("Bulk payroll computed successfully");
-      setBulkModal(false);
-      fetchMergedPayroll();
-    } catch (err) {
-      toast.error("Error uploading bulk payroll");
-    }
-  };
+  const [year, month] = bulkMonth.split("-");
+
+  const formData = new FormData();
+  formData.append('file', csvFile);
+  formData.append('year', year);
+  formData.append('month', month);
+
+  try {
+    await axios.post(`${api}payroll/bulk`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    toast.success("Bulk payroll computed successfully");
+    setBulkModal(false);
+    fetchMergedPayroll();
+  } catch (err) {
+    toast.error("Error uploading bulk payroll");
+  }
+};
+
 
   const filtered = payrolls.filter(p =>
     p[searchType]?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -166,16 +182,16 @@ const Payroll = () => {
         </select>
 
         <div className="month-select">
-  <input
-    type="month"
-    id="monthPicker"
-    value={selectedMonth}
-    onChange={(e) => {
-      setSelectedMonth(e.target.value);
-      setCurrentPage(1);
-    }}
-  />
-</div>
+          <input
+            type="month"
+            id="monthPicker"
+            value={selectedMonth}
+            onChange={(e) => {
+              setSelectedMonth(e.target.value);
+              setCurrentPage(1);
+            }}
+          />
+        </div>
 
 
         <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
@@ -224,6 +240,14 @@ const Payroll = () => {
   <div className="bulk-modal-backdrop" onClick={() => setBulkModal(false)}>
     <div className="bulk-modal" onClick={e => e.stopPropagation()}>
       <h3>Bulk Payroll Computation</h3>
+      <input
+        id="bulk-month-picker"
+        type="month"
+        value={bulkMonth}
+        onChange={(e) => setBulkMonth(e.target.value)}
+        className="month-picker"
+      />
+
       <p>
   Upload CSV: <b>empId, basic, allowance, deduction</b> 
   &nbsp; 

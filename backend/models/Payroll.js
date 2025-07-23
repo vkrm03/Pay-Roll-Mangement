@@ -8,8 +8,8 @@ const payrollSchema = new mongoose.Schema({
   deduction: Number,
   gross: Number,
   net: Number,
-  month: String, // e.g., "July"
-  year: Number   // e.g., 2025
+  month: String,
+  year: Number
 }, { timestamps: true });
 
 module.exports = mongoose.model('Payroll', payrollSchema);

@@ -325,7 +325,7 @@
 
 app.post('/api/payroll/add', async (req, res) => {
   try {
-    const { empId, basic, allowance, deduction } = req.body;
+    const { empId, basic, allowance, deduction, year, month } = req.body;
 
     const employee = await Employee.findOne({ empId });
 
@@ -442,7 +442,9 @@ app.post('/api/payroll/add', async (req, res) => {
 
 app.post('/api/payroll/bulk', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ msg: 'No file uploaded' });
+  console.log("Payroll Bulk");
 
+  const { month, year } = req.body; // 🔥 Add this
   const filePath = path.join(__dirname, req.file.path);
   const results = [];
 
@@ -466,16 +468,16 @@ app.post('/api/payroll/bulk', upload.single('file'), async (req, res) => {
           if (!emp) continue;
 
           await Payroll.create({
-  name: emp.name,
-  empId: emp.empId,
-  basic: row.basic,
-  allowance: row.allowance,
-  deduction: row.deduction,
-  gross: row.gross,
-  net: row.net,
-  month: row.month,
-  year: row.year
-});
+            name: emp.name,
+            empId: emp.empId,
+            basic: row.basic,
+            allowance: row.allowance,
+            deduction: row.deduction,
+            gross: row.gross,
+            net: row.net,
+            month,
+            year
+          });
 
           emp.salary = row.net;
           await emp.save();
@@ -490,6 +492,7 @@ app.post('/api/payroll/bulk', upload.single('file'), async (req, res) => {
     res.status(500).json({ msg: 'Server error during bulk upload' });
   }
 });
+
 
 
 

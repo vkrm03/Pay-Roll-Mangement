@@ -15,6 +15,27 @@
   color: #2d3748;
 }
 
+
+.month-picker {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+}
+
+.month-picker:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+}
+
+
 .payroll-controls {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr auto auto auto;
