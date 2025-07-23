@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const AttendanceSchema = new mongoose.Schema({
   empId: { type: String, required: true },
-  date: { type: String, required: true }, // Format: YYYY-MM-DD
+  date: { type: String, required: true },
   status: { type: String, enum: ['Present', 'Absent'], required: true }
 });
 

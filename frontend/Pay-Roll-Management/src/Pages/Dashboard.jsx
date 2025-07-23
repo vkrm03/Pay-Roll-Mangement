@@ -3,8 +3,8 @@ import axios from 'axios';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
 import '../../public/styles/dashboard.css';
-import api from '../../public/api';
 import { toast } from 'react-toastify';
+import api from '../../public/api';
 
 const Dashboard = () => {
   const [summary, setSummary] = useState({
@@ -23,12 +23,12 @@ const Dashboard = () => {
       const res = await axios.get(`${api}payroll/summary`);
       setSummary(res.data);
     } catch (err) {
-      toast.error("Failed to fetch dashboard data");
+      toast.error('Failed to fetch dashboard data');
     }
   };
 
   const chartData = {
-    labels: summary.last5Payrolls.map((p, idx) => `Payroll #${idx + 1}`),
+    labels: summary.last5Payrolls.map(p => `${p.month}/${p.year}`),
     datasets: [
       {
         label: 'Net Pay',
@@ -52,12 +52,10 @@ const Dashboard = () => {
           <h4>Total Employees</h4>
           <p>{summary.totalEmployees}</p>
         </div>
-
         <div className="stat-card">
           <h4>Total Net Paid</h4>
           <p>₹{summary.totalNet.toLocaleString()}</p>
         </div>
-
         <div className="stat-card">
           <h4>Total Deductions</h4>
           <p>₹{summary.totalDeduction.toLocaleString()}</p>
@@ -69,7 +67,7 @@ const Dashboard = () => {
         {summary.last5Payrolls.length > 0 ? (
           <Bar data={chartData} />
         ) : (
-          <p>No payroll records yet.</p>
+          <p>No payroll data found.</p>
         )}
       </div>
     </div>

@@ -409,7 +409,7 @@ app.get('/api/payroll/merged', async (req, res) => {
     const payrollFilter = {};
     if (year && month) {
       payrollFilter.year = parseInt(year);
-      payrollFilter.month = month.padStart(2, '0'); // ensure format like "08"
+      payrollFilter.month = month.padStart(2, '0');
     }
 
     const payrolls = await Payroll.find(payrollFilter);
@@ -456,7 +456,7 @@ app.post('/api/payroll/bulk', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ msg: 'No file uploaded' });
   console.log("Payroll Bulk");
 
-  const { month, year } = req.body; // 🔥 Add this
+  const { month, year } = req.body;
   const filePath = path.join(__dirname, req.file.path);
   const results = [];
 
@@ -475,29 +475,34 @@ app.post('/api/payroll/bulk', upload.single('file'), async (req, res) => {
         }
       })
       .on('end', async () => {
-        for (const row of results) {
-          const emp = await Employee.findOne({ empId: row.empId });
-          if (!emp) continue;
+  for (const row of results) {
+    const emp = await Employee.findOne({ empId: row.empId });
+    if (!emp) continue;
 
-          await Payroll.create({
-            name: emp.name,
-            empId: emp.empId,
-            basic: row.basic,
-            allowance: row.allowance,
-            deduction: row.deduction,
-            gross: row.gross,
-            net: row.net,
-            month,
-            year
-          });
+    await Payroll.findOneAndUpdate(
+      { empId: emp.empId, month, year },
+      {
+        name: emp.name,
+        empId: emp.empId,
+        basic: row.basic,
+        allowance: row.allowance,
+        deduction: row.deduction,
+        gross: row.gross,
+        net: row.net,
+        month,
+        year
+      },
+      { upsert: true, new: true }
+    );
 
-          emp.salary = row.net;
-          await emp.save();
-        }
+    emp.salary = row.net;
+    await emp.save();
+  }
 
-        fs.unlinkSync(filePath);
-        res.status(201).json({ msg: "Bulk payroll processed & salaries updated" });
-      });
+  fs.unlinkSync(filePath);
+  res.status(201).json({ msg: "Bulk payroll processed & salaries updated" });
+});
+
 
   } catch (err) {
     console.error("Bulk Payroll Upload Error:", err);
@@ -512,26 +517,25 @@ app.post('/api/payroll/bulk', upload.single('file'), async (req, res) => {
 
 app.get('/api/payroll/summary', async (req, res) => {
   try {
+    const employees = await Employee.countDocuments();
+
     const payrolls = await Payroll.find();
-    const employees = await Employee.find();
 
-    let totalNet = 0, totalDeduction = 0;
+    const totalNet = payrolls.reduce((acc, p) => acc + (p.net || 0), 0);
+    const totalDeduction = payrolls.reduce((acc, p) => acc + (p.deduction || 0), 0);
 
-    payrolls.forEach(p => {
-      totalNet += p.net || 0;
-      totalDeduction += p.deduction || 0;
-    });
+    // Get latest 5 payrolls sorted by creation date
+    const last5Payrolls = await Payroll.find().sort({ createdAt: -1 }).limit(5);
 
     res.status(200).json({
-      totalEmployees: employees.length,
+      totalEmployees: employees,
       totalNet,
       totalDeduction,
-      last5Payrolls: payrolls.slice(-5).reverse()
+      last5Payrolls,
     });
-
-  } catch (err) {
-    console.error("Payroll Summary error:", err);
-    res.status(500).json({ msg: "Error fetching payroll summary" });
+  } catch (error) {
+    console.error('Error fetching payroll summary:', error.message);
+    res.status(500).json({ message: 'Failed to fetch payroll dashboard summary' });
   }
 });
 

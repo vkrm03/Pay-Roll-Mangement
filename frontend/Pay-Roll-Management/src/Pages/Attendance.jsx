@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import api from '../../public/api';
-import '../../public/styles/attendance.css'; // Only attendance styles now!
+import '../../public/styles/attendance.css';
 
 const Attendance = () => {
   const [employees, setEmployees] = useState([]);

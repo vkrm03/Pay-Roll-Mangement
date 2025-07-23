@@ -25,7 +25,6 @@ const Employees = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortType, setSortType] = useState("");
 
-  // Filtering + Sorting Logic
   const filteredEmployees = employees
     .filter(emp => {
       const value = emp[searchType]?.toLowerCase();
