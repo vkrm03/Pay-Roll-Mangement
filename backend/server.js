@@ -343,7 +343,9 @@ app.post('/api/payroll/add', async (req, res) => {
       allowance,
       deduction,
       gross,
-      net
+      net,
+      month,
+      year
     });
 
     await newPayroll.save();
@@ -403,7 +405,6 @@ app.post('/api/payroll/add', async (req, res) => {
       const employees = await Employee.find();
       const payrolls = await Payroll.find();
 
-      // Map payrolls by empId for quick lookup
       const payrollMap = {};
       payrolls.forEach(p => {
         payrollMap[p.empId] = p;
@@ -420,9 +421,8 @@ app.post('/api/payroll/add', async (req, res) => {
           designation: emp.designation,
           salary: emp.salary,
           joinDate: emp.joinDate,
-          _id: p?._id || null,  // Use payroll ID if exists
+          _id: p?._id || null,
 
-          // Payroll Fields (null if not computed yet)
           basic: p?.basic || null,
           allowance: p?.allowance || null,
           deduction: p?.deduction || null,
@@ -466,16 +466,17 @@ app.post('/api/payroll/bulk', upload.single('file'), async (req, res) => {
           if (!emp) continue;
 
           await Payroll.create({
-            name: emp.name,
-            empId: emp.empId,
-            basic: row.basic,
-            allowance: row.allowance,
-            deduction: row.deduction,
-            gross: row.gross,
-            net: row.net
-          });
+  name: emp.name,
+  empId: emp.empId,
+  basic: row.basic,
+  allowance: row.allowance,
+  deduction: row.deduction,
+  gross: row.gross,
+  net: row.net,
+  month: row.month,
+  year: row.year
+});
 
-          // 💰 Update employee's salary to net
           emp.salary = row.net;
           await emp.save();
         }

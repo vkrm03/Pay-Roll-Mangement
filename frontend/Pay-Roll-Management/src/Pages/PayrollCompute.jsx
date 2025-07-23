@@ -17,6 +17,11 @@ const Payroll = () => {
   const [bulkModal, setBulkModal] = useState(false);
   const [csvFile, setCsvFile] = useState(null);
   const [sortType, setSortType] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`; // "2025-07"
+});
+
   const perPage = 8;
 
   useEffect(() => {
@@ -36,6 +41,8 @@ const Payroll = () => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   };
+
+  
 
   const handleSampleDownload = () => {
   const headers = ["empId", "basic", "allowance", "deduction"];
@@ -110,7 +117,6 @@ const Payroll = () => {
     }
   };
 
-  // ===== Filtering & Sorting Logic =====
   const filtered = payrolls.filter(p =>
     p[searchType]?.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -130,7 +136,6 @@ const Payroll = () => {
   const totalPages = Math.ceil(sorted.length / perPage);
   const displayed = sorted.slice((currentPage - 1) * perPage, currentPage * perPage);
 
-  // ===== CSV Export =====
   const handleExport = () => {
     const headers = ["Name", "ID", "Basic", "Allowance", "Deduction", "Gross", "Net"];
     const rows = payrolls.map(p => [
@@ -159,6 +164,19 @@ const Payroll = () => {
           <option value="net-desc">Net Salary (High to Low)</option>
           <option value="net-asc">Net Salary (Low to High)</option>
         </select>
+
+        <div className="month-select">
+  <input
+    type="month"
+    id="monthPicker"
+    value={selectedMonth}
+    onChange={(e) => {
+      setSelectedMonth(e.target.value);
+      setCurrentPage(1);
+    }}
+  />
+</div>
+
 
         <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
           <option value="name">Name</option>

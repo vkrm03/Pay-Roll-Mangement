@@ -17,7 +17,7 @@
 
 .payroll-controls {
   display: grid;
-  grid-template-columns: 1fr 2fr auto auto auto;
+  grid-template-columns: 1fr 1fr 1fr auto auto auto;
   gap: 1rem;
   align-items: center;
   margin-bottom: 1.5rem;
@@ -299,9 +299,6 @@
   }
 }
 
-
-
-/* === Bulk Payroll Modal === */
 .bulk-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -339,7 +336,6 @@
   margin-bottom: 1.5rem;
 }
 
-/* === Drag & Drop Zone === */
 .bulk-drag-zone {
   border: 2px dashed #2F80ED;
   border-radius: 15px;
@@ -360,14 +356,12 @@
   color: #555;
 }
 
-/* === File Name Preview === */
 .bulk-file-name {
   margin-top: 1rem;
   font-weight: 600;
   color: #2F80ED;
 }
 
-/* === Actions === */
 .bulk-modal-actions {
   margin-top: 2rem;
   display: flex;
