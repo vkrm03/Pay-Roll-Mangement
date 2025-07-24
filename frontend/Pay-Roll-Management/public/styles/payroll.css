@@ -3,7 +3,7 @@
   background-color: #f9fbfe;
   border-radius: 12px;
   max-width: 1200px;
-  margin: 2rem auto;
+  margin: 1rem auto;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   position: relative;
 }
@@ -38,7 +38,7 @@
 
 .payroll-controls {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr auto auto auto;
+  grid-template-columns: 0.6fr 0.7fr 0.7fr auto auto auto;
   gap: 1rem;
   align-items: center;
   margin-bottom: 1.5rem;
@@ -429,4 +429,20 @@
 @keyframes slideUpModal {
   from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+
+
+
+@media screen and (max-width: 500px) {
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    width: 100%;
+    -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+  }
+
+  thead, tbody, tr, th, td {
+    white-space: nowrap;
+  }
 }

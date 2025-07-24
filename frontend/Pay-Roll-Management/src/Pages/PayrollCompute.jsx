@@ -205,7 +205,7 @@ const handleBulkPayrollUpload = async () => {
           placeholder={`Search by ${searchType}`}
         />
 
-        <button className="compute-btn" onClick={openBulkModal}>Compute Bulk Payroll</button>
+        <button className="compute-btn" onClick={openBulkModal}>Compute Payroll</button>
         <button className="export-btn" onClick={handleExport}>Export CSV</button>
       </div>
 
