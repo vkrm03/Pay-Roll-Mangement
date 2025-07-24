@@ -511,33 +511,113 @@ app.post('/api/payroll/bulk', upload.single('file'), async (req, res) => {
 });
 
 
-
-
-
-
 app.get('/api/payroll/summary', async (req, res) => {
   try {
-    const employees = await Employee.countDocuments();
+    const { year, month } = req.query;
 
-    const payrolls = await Payroll.find();
+    const filter = {};
+    if (year) filter.year = parseInt(year);
+    if (month) filter.month = month.padStart(2, '0');
 
-    const totalNet = payrolls.reduce((acc, p) => acc + (p.net || 0), 0);
-    const totalDeduction = payrolls.reduce((acc, p) => acc + (p.deduction || 0), 0);
+    const payrolls = await Payroll.find(filter);
+    const employees = await Employee.find();
 
-    // Get latest 5 payrolls sorted by creation date
-    const last5Payrolls = await Payroll.find().sort({ createdAt: -1 }).limit(5);
+    // Monthly salary trend (net + gross)
+    const monthlyTrend = await Payroll.aggregate([
+      {
+        $group: {
+          _id: { year: "$year", month: "$month" },
+          totalGross: { $sum: "$gross" },
+          totalNet: { $sum: "$net" }
+        }
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } }
+    ]);
 
-    res.status(200).json({
-      totalEmployees: employees,
-      totalNet,
-      totalDeduction,
-      last5Payrolls,
+    // Avg CTC by department
+    const avgCTCByDept = await Employee.aggregate([
+      {
+        $group: {
+          _id: "$department",
+          avgCTC: { $avg: "$salary" },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { avgCTC: -1 } }
+    ]);
+
+    const topCTCDept = avgCTCByDept[0] || {};
+
+    // Most common deductions
+    const deductionCount = {};
+    payrolls.forEach(p => {
+      const rounded = Math.round(p.deduction / 100) * 100;
+      deductionCount[rounded] = (deductionCount[rounded] || 0) + 1;
     });
-  } catch (error) {
-    console.error('Error fetching payroll summary:', error.message);
-    res.status(500).json({ message: 'Failed to fetch payroll dashboard summary' });
+
+    const sortedDeduction = Object.entries(deductionCount)
+      .sort((a, b) => b[1] - a[1])
+      .map(([amount, count]) => ({
+        _id: `₹${amount}`,
+        count,
+        percent: ((count / payrolls.length) * 100).toFixed(1)
+      }));
+
+    const mostCommonDeduction = sortedDeduction[0] || {};
+
+    // Highest paid employee
+    const highestPaid = payrolls.reduce((max, p) =>
+      p.net > (max?.net || 0) ? p : max,
+      null
+    );
+
+    // Dept distribution
+    const departmentDistribution = await Employee.aggregate([
+      {
+        $group: {
+          _id: "$department",
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          count: 1,
+          percent: {
+            $round: [
+              { $multiply: [{ $divide: ["$count", employees.length] }, 100] },
+              1
+            ]
+          }
+        }
+      }
+    ]);
+
+    // 🔥 Total calculations
+    const totalNet = payrolls.reduce((acc, p) => acc + p.net, 0);
+    const totalDeduction = payrolls.reduce((acc, p) => acc + p.deduction, 0);
+
+    // Response
+    res.status(200).json({
+      monthlyTrend,
+      avgCTCByDept,
+      departmentDistribution,
+      commonDeductions: sortedDeduction,
+      mostCommonDeduction,
+      topCTCDept,
+      highestPaid,
+      totalEmployees: employees.length,
+      totalNet,
+      totalDeduction
+    });
+
+  } catch (err) {
+    console.error("Error in /api/payroll/summary:", err);
+    res.status(500).json({ message: "Server Error" });
   }
 });
+
+
 
 
 
