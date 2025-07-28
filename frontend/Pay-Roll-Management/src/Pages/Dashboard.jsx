@@ -111,7 +111,7 @@ const Dashboard = () => {
           <h4>Highest Paid (This Month)</h4>
           <p>{summary?.highestPaid?.name || 'N/A'} (₹{Math.round(summary?.highestPaid?.net || 0).toLocaleString()})</p>
         </div>
-        <div className="stat-card">
+        <div className="stat-card"> 
           <h4>Top CTC Dept</h4>
           <p>{summary?.topCTCDept?._id || 'N/A'} (₹{Math.round(summary?.topCTCDept?.avgCTC || 0).toLocaleString()})</p>
         </div>

@@ -9,6 +9,7 @@ import Dashboard from './Pages/Dashboard';
 import Employees from './Pages/Employees';
 import Attendance from './Pages/Attendance';
 import PayrollCompute from './Pages/PayrollCompute';
+import TaxDeclarationForm from './Pages/TaxDeclaration';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -23,7 +24,8 @@ const App = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/employees" element={<Employees />} />
         <Route path="/attendance" element={<Attendance />} />
-        <Route path="/payroll" element={<PayrollCompute />} /> 
+        <Route path="/tax" element={<TaxDeclarationForm />} />
+        <Route path="/payroll" element={<PayrollCompute />} />
         
       </Routes>
       <ToastContainer position="top-center" autoClose={1000} hideProgressBar={true}/>

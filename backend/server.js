@@ -7,6 +7,7 @@
   const Employee = require('./models/Employee');
   const Attendance = require('./models/Attendance');
   const Payroll = require('./models/Payroll');
+  const TaxDeclaration = require('./models/TaxDeclaration');
   const multer = require('multer');
   const csv = require('csv-parser');
   const fs = require('fs');
@@ -522,7 +523,6 @@ app.get('/api/payroll/summary', async (req, res) => {
     const payrolls = await Payroll.find(filter);
     const employees = await Employee.find();
 
-    // Monthly salary trend (net + gross)
     const monthlyTrend = await Payroll.aggregate([
       {
         $group: {
@@ -534,7 +534,6 @@ app.get('/api/payroll/summary', async (req, res) => {
       { $sort: { "_id.year": 1, "_id.month": 1 } }
     ]);
 
-    // Avg CTC by department
     const avgCTCByDept = await Employee.aggregate([
       {
         $group: {
@@ -548,7 +547,6 @@ app.get('/api/payroll/summary', async (req, res) => {
 
     const topCTCDept = avgCTCByDept[0] || {};
 
-    // Most common deductions
     const deductionCount = {};
     payrolls.forEach(p => {
       const rounded = Math.round(p.deduction / 100) * 100;
@@ -565,13 +563,11 @@ app.get('/api/payroll/summary', async (req, res) => {
 
     const mostCommonDeduction = sortedDeduction[0] || {};
 
-    // Highest paid employee
     const highestPaid = payrolls.reduce((max, p) =>
       p.net > (max?.net || 0) ? p : max,
       null
     );
 
-    // Dept distribution
     const departmentDistribution = await Employee.aggregate([
       {
         $group: {
@@ -593,11 +589,9 @@ app.get('/api/payroll/summary', async (req, res) => {
       }
     ]);
 
-    // 🔥 Total calculations
     const totalNet = payrolls.reduce((acc, p) => acc + p.net, 0);
     const totalDeduction = payrolls.reduce((acc, p) => acc + p.deduction, 0);
 
-    // Response
     res.status(200).json({
       monthlyTrend,
       avgCTCByDept,
@@ -617,8 +611,80 @@ app.get('/api/payroll/summary', async (req, res) => {
   }
 });
 
+app.post('/api/tax/declaration', async (req, res) => {
+  try {
+    const { empId, year, section80C, section80D, hra, lta, otherDeductions, rentPaid } = req.body;
+
+    let decl = await TaxDeclaration.findOne({ empId, year });
+
+    if (decl) {
+      Object.assign(decl, { section80C, section80D, hra, lta, otherDeductions, rentPaid });
+      await decl.save();
+      return res.status(200).json({ msg: 'Declaration updated', data: decl });
+    }
+
+    decl = new TaxDeclaration({ empId, year, section80C, section80D, hra, lta, otherDeductions, rentPaid });
+    await decl.save();
+    res.status(201).json({ msg: 'Declaration saved', data: decl });
+
+  } catch (err) {
+    console.error("Declaration Error:", err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+});
 
 
+app.get('/api/tax/declaration/:empId/:year', async (req, res) => {
+  try {
+    const data = await TaxDeclaration.findOne({ empId: req.params.empId, year: parseInt(req.params.year) });
+    if (!data) return res.status(404).json({ msg: "No declaration found" });
+    res.status(200).json(data);
+  } catch (err) {
+    console.error("Fetch Declaration Error:", err);
+    res.status(500).json({ msg: "Server error" });
+  }
+});
+
+
+app.get('/api/tax/compute/:empId/:year', async (req, res) => {
+  try {
+    const { empId, year } = req.params;
+
+    const payrolls = await Payroll.find({ empId, year: parseInt(year) });
+    const declaration = await TaxDeclaration.findOne({ empId, year: parseInt(year) });
+
+    if (!payrolls.length) return res.status(404).json({ msg: "No payroll data found" });
+
+    const grossIncome = payrolls.reduce((acc, p) => acc + (p.gross || 0), 0);
+    const deductionDeclared = declaration
+      ? (declaration.section80C + declaration.section80D + declaration.hra + declaration.lta + declaration.otherDeductions)
+      : 0;
+
+    const taxableIncome = Math.max(grossIncome - deductionDeclared, 0);
+
+    let tax = 0;
+    if (taxableIncome <= 250000) tax = 0;
+    else if (taxableIncome <= 500000) tax = (taxableIncome - 250000) * 0.05;
+    else if (taxableIncome <= 1000000)
+      tax = (250000 * 0.05) + (taxableIncome - 500000) * 0.2;
+    else
+      tax = (250000 * 0.05) + (500000 * 0.2) + (taxableIncome - 1000000) * 0.3;
+
+    const monthlyTDS = Math.round(tax / 12);
+
+    res.status(200).json({
+      grossIncome,
+      deductionDeclared,
+      taxableIncome,
+      totalTax: Math.round(tax),
+      monthlyTDS
+    });
+
+  } catch (err) {
+    console.error("TDS Error:", err);
+    res.status(500).json({ msg: "Error computing TDS" });
+  }
+});
 
 
 
