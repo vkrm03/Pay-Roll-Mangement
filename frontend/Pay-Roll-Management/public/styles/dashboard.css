@@ -27,6 +27,21 @@ h2 {
   transition: transform 0.2s;
 }
 
+.chart-card-full, .chart-card {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  margin: 1rem 0;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+
 .stat-card:hover {
   transform: scale(1.02);
 }

@@ -26,6 +26,7 @@ const Login = () => {
       const res = await axios.post(`${api}login`, { email, password });
 
       localStorage.setItem('token', res.data.token);
+      localStorage.setItem('u_id', res.data.u_id);
       localStorage.setItem('username', res.data.username);
       localStorage.setItem('role', res.data.role);
       window.dispatchEvent(new Event("userChanged"));

@@ -53,7 +53,8 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// 📥 Get Current User
+
+
 app.get('/api/user', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
@@ -66,7 +67,47 @@ app.get('/api/user', authenticateToken, async (req, res) => {
   }
 });
 
-// 🔧 Update User + Employee
+app.get('/api/payroll/user_summary', authenticateToken, async (req, res) => {
+try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const employee = await Employee.findOne({ email: user.email });
+    if (!employee) {
+      console.warn("No employee found for email:", user.email);
+      return res.status(404).json({ message: 'Employee data not found' });
+    }
+
+    const payrolls = await Payroll.find({ empId: employee.empId }).sort({ createdAt: 1 });
+
+    const history = payrolls.map(p => ({
+      month: p.month,
+      year: p.year,
+      net: p.net,
+      gross: p.gross,
+      deduction: p.deduction
+    }));
+
+    res.status(200).json({
+      employee: {
+        name: employee.name,
+        email: employee.email,
+        department: employee.department,
+        designation: employee.designation
+      },
+      history
+    });
+
+  } catch (err) {
+    console.error('Error fetching user payroll:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+
+
+
 app.post('/api/update_user', authenticateToken, async (req, res) => {
   try {
     const { email, phone, password } = req.body;
@@ -79,19 +120,17 @@ app.post('/api/update_user', authenticateToken, async (req, res) => {
 
     const prevEmail = user.email;
 
-    // Update user fields
     if (email) user.email = email;
     if (password) user.password = await bcrypt.hash(password, 10);
     await user.save();
-    console.log("✅ User updated:", user.email);
+    console.log("User updated:", user.email);
 
-    // Update employee if exists
     const employee = await Employee.findOne({ email: prevEmail });
     if (employee) {
       if (email) employee.email = email;
       if (phone) employee.phone = phone;
       await employee.save();
-      console.log("✅ Employee updated:", employee.email);
+      console.log("Employee updated:", employee.email);
     }
 
     res.status(200).json({ msg: 'User profile updated successfully' });
@@ -137,10 +176,9 @@ app.post('/api/register', async (req, res) => {
   JWT_SECRET,
   { expiresIn: '1d' }
 );
-
-
       res.status(200).json({
         token,
+        u_id: user._id,
         username: user.username,
         role: user.role
       });

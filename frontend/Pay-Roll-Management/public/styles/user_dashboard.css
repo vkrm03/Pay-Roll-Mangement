@@ -1,0 +1,62 @@
+
+.dashboard-container {
+  padding: 2rem;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f4f6f9;
+  color: #333;
+}
+
+h2 {
+  margin-bottom: 1.5rem;
+}
+
+.stats-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  flex: 1 1 200px;
+  background-color: #fff;
+  padding: 1rem;
+  border-left: 5px solid #4caf50;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.stat-card h4 {
+  margin-bottom: 0.5rem;
+  color: #555;
+}
+
+.stat-card p {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #222;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.chart-card,
+.chart-card-full {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.chart-card-full {
+  grid-column: 1 / -1;
+}
+
+.chart-card h4,
+.chart-card-full h4 {
+  margin-bottom: 1rem;
+  color: #444;
+}
