@@ -68,7 +68,7 @@ app.get('/api/user', authenticateToken, async (req, res) => {
 });
 
 app.get('/api/payroll/user_summary', authenticateToken, async (req, res) => {
-try {
+  try {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
@@ -93,7 +93,9 @@ try {
         name: employee.name,
         email: employee.email,
         department: employee.department,
-        designation: employee.designation
+        designation: employee.designation,
+        joinDate: employee.joinDate,
+        salary: employee.salary
       },
       history
     });

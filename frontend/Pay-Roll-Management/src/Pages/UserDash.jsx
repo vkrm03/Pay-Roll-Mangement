@@ -3,30 +3,27 @@ import axios from 'axios';
 import '../../public/styles/user_dashboard.css';
 import { toast } from 'react-toastify';
 import api from '../../public/api';
-import { Line, Bar, Pie } from 'react-chartjs-2';
+import { Bar, Pie } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  LineElement,
   BarElement,
   PointElement,
+  ArcElement,
   Tooltip,
-  Legend,
-  ArcElement
+  Legend
 } from 'chart.js';
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  LineElement,
   BarElement,
   PointElement,
   ArcElement,
   Tooltip,
   Legend
 );
-
 
 const UserDash = () => {
   const [userInfo, setUserInfo] = useState({});
@@ -72,27 +69,28 @@ const UserDash = () => {
     return `${years}y ${months}m`;
   };
 
-  const lineData = {
-    labels: payrollHistory.map(item => `${item.month}/${item.year}`),
+  const monthlyNetPay = Array(12).fill(0);
+  payrollHistory.forEach(item => {
+    if (item.month >= 1 && item.month <= 12) {
+      monthlyNetPay[item.month - 1] += item.net || 0;
+    }
+  });
+
+  const netEarningsBarData = {
+    labels: [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ],
     datasets: [
       {
         label: 'Net Pay (₹)',
-        data: payrollHistory.map(item => item.net),
-        fill: false,
-        borderColor: '#4caf50',
-        tension: 0.3
-      },
-      {
-        label: 'Gross Pay (₹)',
-        data: payrollHistory.map(item => item.gross),
-        fill: false,
-        borderColor: '#2196f3',
-        tension: 0.3
+        data: monthlyNetPay,
+        backgroundColor: '#4caf50'
       }
     ]
   };
 
-  const barData = {
+  const payVsDeductionData = {
     labels: payrollHistory.map(item => `${item.month}/${item.year}`),
     datasets: [
       {
@@ -119,6 +117,8 @@ const UserDash = () => {
     ]
   };
 
+  const totalGross = payrollHistory.reduce((sum, p) => sum + (p.gross || 0), 0);
+
   if (loading) return <div className="dashboard-container"><h3>Loading your dashboard... ⏳</h3></div>;
 
   return (
@@ -135,20 +135,23 @@ const UserDash = () => {
         <div className="stat-card"><h4>Last Net Pay</h4><p>₹{payrollHistory.length > 0 ? Math.round(latest.net).toLocaleString() : 'N/A'}</p></div>
         <div className="stat-card"><h4>Total Deductions (YTD)</h4>
           <p>₹{payrollHistory.reduce((acc, cur) => acc + (cur.deduction || 0), 0).toLocaleString()}</p></div>
+        <div className="stat-card"><h4>Total Gross Salary (YTD)</h4><p>₹{totalGross.toLocaleString()}</p></div>
+        <div className="stat-card"><h4>Payroll Records</h4><p>{payrollHistory.length}</p></div>
       </div>
+        
 
       <div className="charts-grid">
-        <div className="chart-card-full">
-          <h4>Monthly Salary Trend 📈</h4>
+        <div className="chart-card">
+          <h4>Yearly Net Earnings Overview 💰</h4>
           {payrollHistory.length > 0 ? (
-            <div style={{ height: '400px', width: '100%' }}><Line data={lineData} /></div>
-          ) : <p>No payroll records found 🫠</p>}
+            <div style={{ height: '400px', width: '100%' }}><Bar data={netEarningsBarData} /></div>
+          ) : <p>No earnings data to show 🙃</p>}
         </div>
 
         <div className="chart-card">
           <h4>Pay vs Deduction (Monthly) 📊</h4>
           {payrollHistory.length > 0 ? (
-            <div style={{ height: '300px' }}><Bar data={barData} /></div>
+            <div style={{ height: '400px' }}><Bar data={payVsDeductionData} /></div>
           ) : <p>No data to show</p>}
         </div>
 

@@ -1,62 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
 .dashboard-container {
-  padding: 2rem;
+  padding: 2rem 3rem;
   font-family: 'Poppins', sans-serif;
-  background-color: #f4f6f9;
-  color: #333;
+  background: linear-gradient(to right, #f0f2f5, #ffffff);
+  min-height: 100vh;
+  color: #222;
 }
 
 h2 {
-  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  color: #333;
 }
 
 .stats-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
 }
 
 .stat-card {
-  flex: 1 1 200px;
-  background-color: #fff;
-  padding: 1rem;
-  border-left: 5px solid #4caf50;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  background: #ffffff;
+  padding: 1.2rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease-in-out;
+  border-left: 6px solid #4caf50;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
 }
 
 .stat-card h4 {
+  font-size: 0.95rem;
+  color: #666;
   margin-bottom: 0.5rem;
-  color: #555;
 }
 
 .stat-card p {
-  font-size: 1.1rem;
-  font-weight: bold;
-  color: #222;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
 }
 
 .charts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   gap: 2rem;
 }
 
 .chart-card,
 .chart-card-full {
-  background: #fff;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
 }
 
 .chart-card-full {
   grid-column: 1 / -1;
 }
 
+.chart-card {
+    height: 400px;
+}
+
 .chart-card h4,
 .chart-card-full h4 {
-  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
   color: #444;
+}
+
+@media screen and (max-width: 768px) {
+  .dashboard-container {
+    padding: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.6rem;
+  }
 }
