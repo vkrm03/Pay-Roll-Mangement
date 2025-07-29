@@ -20,6 +20,9 @@
 
   app.use(cors());
   app.use(express.json());
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+
 
   mongoose.connect('mongodb://localhost:27017/payroll_app', {
     useNewUrlParser: true,
@@ -45,36 +48,50 @@ const authenticateToken = (req, res, next) => {
 
   jwt.verify(token, JWT_SECRET, (err, decoded) => {
     if (err) return res.status(403).json({ msg: 'Invalid/Expired token' });
-    req.user = decoded; // should contain at least user ID or email
+    req.user = decoded;
     next();
   });
 };
 
-app.post('/api/update_user', authenticateToken, express.urlencoded({ extended: true }), async (req, res) => {
+// 📥 Get Current User
+app.get('/api/user', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    if (!user) return res.status(404).json({ msg: 'User not found' });
+
+    res.status(200).json(user);
+  } catch (err) {
+    console.error('Fetch user error:', err);
+    res.status(500).json({ msg: 'Server error fetching user' });
+  }
+});
+
+// 🔧 Update User + Employee
+app.post('/api/update_user', authenticateToken, async (req, res) => {
   try {
     const { email, phone, password } = req.body;
-    console.log("Update Payload:", req.body);
+    if (!email && !phone && !password) {
+      return res.status(400).json({ msg: 'No fields to update' });
+    }
 
     const user = await User.findById(req.user.id);
-    console.log(user);
-    
     if (!user) return res.status(404).json({ msg: 'User not found' });
 
     const prevEmail = user.email;
 
+    // Update user fields
     if (email) user.email = email;
-    if (phone) user.phone = phone;
     if (password) user.password = await bcrypt.hash(password, 10);
-
     await user.save();
-    console.log("User updated:", user.email);
+    console.log("✅ User updated:", user.email);
 
-
+    // Update employee if exists
     const employee = await Employee.findOne({ email: prevEmail });
     if (employee) {
       if (email) employee.email = email;
       if (phone) employee.phone = phone;
       await employee.save();
+      console.log("✅ Employee updated:", employee.email);
     }
 
     res.status(200).json({ msg: 'User profile updated successfully' });
@@ -88,7 +105,7 @@ app.post('/api/update_user', authenticateToken, express.urlencoded({ extended: t
 
 
 
-  app.post('/api/register', async (req, res) => {
+app.post('/api/register', async (req, res) => {
     const { username, email, password, role } = req.body;
     try {
       const existingUser = await User.findOne({ email });

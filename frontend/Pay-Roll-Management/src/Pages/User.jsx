@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import api from '../../public/api';
 import { toast } from 'react-toastify';
 import '../../public/styles/user.css';
 
@@ -14,7 +15,7 @@ const UserProfile = () => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('/api/user', {
+        const res = await axios.get(`${api}user`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -41,7 +42,7 @@ const UserProfile = () => {
       const token = localStorage.getItem('token');
       const payload = new URLSearchParams(formData);
 
-      await axios.post('/api/update_user', payload, {
+      await axios.post(`${api}update_user`, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/x-www-form-urlencoded',
