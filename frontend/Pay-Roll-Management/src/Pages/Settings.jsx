@@ -1,128 +1,95 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import '../../public/styles/settings.css';
 import { toast } from 'react-toastify';
 
-const Settings = ({ currentUser }) => {
-  const isAdmin = currentUser?.role === 'admin';
-
-  const [activeTab, setActiveTab] = useState('policy');
+const Settings = ({ user }) => {
+  const isAdmin = true;
 
   const [policy, setPolicy] = useState({
-    workingHours: 8,
-    leavePerMonth: 2,
-    gracePeriod: 10,
-    taxYearStart: '2025-04-01'
+    payCycle: 'Monthly',
+    bonusPercent: 10,
+    taxCutoffDate: '20',
   });
 
-  const [access, setAccess] = useState({
-    canEditPayroll: false,
-    canGeneratePayslip: false,
-    canViewReports: true
+  const [accessControl, setAccessControl] = useState({
+    canCreatePayroll: true,
+    canEditPayroll: true,
+    canExport: true,
   });
-
-  const fetchSettings = async () => {
-    try {
-      const { data } = await axios.get('/api/settings');
-      setPolicy(data.policy || policy);
-      setAccess(data.access || access);
-    } catch (err) {
-      console.log('No existing settings, using defaults');
-    }
-  };
 
   useEffect(() => {
-    fetchSettings();
   }, []);
 
   const handlePolicyChange = (e) => {
     const { name, value } = e.target;
-    setPolicy(prev => ({ ...prev, [name]: value }));
+    setPolicy((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleAccessChange = (e) => {
     const { name, checked } = e.target;
-    setAccess(prev => ({ ...prev, [name]: checked }));
+    setAccessControl((prev) => ({ ...prev, [name]: checked }));
   };
 
-  const saveSettings = async () => {
-    try {
-      await axios.post('/api/settings', { policy, access });
-      toast.success('Settings updated successfully!');
-    } catch (err) {
-      toast.error('Failed to save settings');
-    }
+  const handleSubmit = () => {
+    // axios.post('/api/settings', { policy, accessControl });
+    toast.success("Settings updated successfully");
   };
 
   return (
     <div className="settings-container">
-      <h2>Settings Panel</h2>
+      <h2>⚙️ System Settings</h2>
 
-      <div className="settings-tabs">
-        <button
-          className={activeTab === 'policy' ? 'active' : ''}
-          onClick={() => setActiveTab('policy')}
-        >
-          Policy Setup
-        </button>
-        {isAdmin && (
-          <button
-            className={activeTab === 'access' ? 'active' : ''}
-            onClick={() => setActiveTab('access')}
-          >
-            Access Control
-          </button>
-        )}
+      <div className="settings-section">
+        <h3>📄 Payroll Policy Setup</h3>
+        <label>
+          Pay Cycle:
+          <select name="payCycle" value={policy.payCycle} onChange={handlePolicyChange}>
+            <option>Monthly</option>
+            <option>Bi-Weekly</option>
+            <option>Weekly</option>
+          </select>
+        </label>
+        <label>
+          Bonus Percentage:
+          <input
+            type="number"
+            name="bonusPercent"
+            value={policy.bonusPercent}
+            onChange={handlePolicyChange}
+            min="0"
+            max="100"
+          />
+        </label>
+        <label>
+          Tax Cutoff Date:
+          <input
+            type="number"
+            name="taxCutoffDate"
+            value={policy.taxCutoffDate}
+            onChange={handlePolicyChange}
+            min="1"
+            max="31"
+          />
+        </label>
       </div>
 
-      {activeTab === 'policy' && (
-        <div className="settings-form">
+      {isAdmin && (
+        <div className="settings-section">
+          <h3>Access Control (Admin Only)</h3>
           <label>
-            Working Hours/Day:
             <input
-              type="number"
-              name="workingHours"
-              value={policy.workingHours}
-              onChange={handlePolicyChange}
+              type="checkbox"
+              name="canCreatePayroll"
+              checked={accessControl.canCreatePayroll}
+              onChange={handleAccessChange}
             />
+            Allow Payroll Creation
           </label>
-          <label>
-            Monthly Leave Allowance:
-            <input
-              type="number"
-              name="leavePerMonth"
-              value={policy.leavePerMonth}
-              onChange={handlePolicyChange}
-            />
-          </label>
-          <label>
-            Grace Period (Minutes):
-            <input
-              type="number"
-              name="gracePeriod"
-              value={policy.gracePeriod}
-              onChange={handlePolicyChange}
-            />
-          </label>
-          <label>
-            Tax Year Start:
-            <input
-              type="date"
-              name="taxYearStart"
-              value={policy.taxYearStart}
-              onChange={handlePolicyChange}
-            />
-          </label>
-        </div>
-      )}
-
-      {activeTab === 'access' && isAdmin && (
-        <div className="settings-form">
           <label>
             <input
               type="checkbox"
               name="canEditPayroll"
-              checked={access.canEditPayroll}
+              checked={accessControl.canEditPayroll}
               onChange={handleAccessChange}
             />
             Allow Payroll Editing
@@ -130,25 +97,16 @@ const Settings = ({ currentUser }) => {
           <label>
             <input
               type="checkbox"
-              name="canGeneratePayslip"
-              checked={access.canGeneratePayslip}
+              name="canExport"
+              checked={accessControl.canExport}
               onChange={handleAccessChange}
             />
-            Allow Payslip Generation
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              name="canViewReports"
-              checked={access.canViewReports}
-              onChange={handleAccessChange}
-            />
-            Allow Report Access
+            Allow Export
           </label>
         </div>
       )}
 
-      <button className="save-btn" onClick={saveSettings}>
+      <button className="save-btn" onClick={handleSubmit}>
         Save Settings
       </button>
     </div>

@@ -44,7 +44,7 @@ const ForgotPassword = () => {
             <button type="submit">Send Reset Link</button>
 
             <p className="login-hint">
-              <Link to="/login" className="forgot-link">Back to Login</Link>
+              <Link to="/" className="forgot-link">Back to Login</Link>
             </p>
           </>
         ) : (
@@ -53,7 +53,7 @@ const ForgotPassword = () => {
               A password reset link has been sent to your email !!
             </p>
             <p className="login-hint">
-              <Link to="/login" className="forgot-link">Back to Login</Link>
+              <Link to="/" className="forgot-link">Back to Login</Link>
             </p>
           </>
         )}

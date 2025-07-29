@@ -1,0 +1,102 @@
+.user-profile-container {
+  max-width: 600px;
+  margin: 50px auto;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 30px 40px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+}
+
+.user-profile-container h2 {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 25px;
+  color: #4a4a4a;
+}
+
+.user-info label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 15px;
+  color: #333;
+  font-weight: 500;
+}
+
+.user-info input[type="text"],
+.user-info input[type="email"],
+.user-info input[type="password"] {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 15px;
+  background-color: rgba(255, 255, 255, 0.9);
+  transition: border-color 0.3s ease;
+}
+
+.user-info input:focus {
+  border-color: #667eea;
+  outline: none;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 15px 0 25px;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.user-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.save-btn,
+.cancel-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.save-btn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.save-btn:hover {
+  background-color: #45a047;
+}
+
+.cancel-btn {
+  background-color: #e53935;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background-color: #d32f2f;
+}
+
+/* Profile image preview style (optional) */
+.profile-preview {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 15px;
+  border: 2px solid #ddd;
+}

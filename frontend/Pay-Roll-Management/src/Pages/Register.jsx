@@ -34,7 +34,7 @@ const Register = () => {
   try {
     await axios.post(`${api}register`, { username, email, password, role });
     toast.success('Registered successfully!');
-    navigate('/login');
+    navigate('/');
   } catch (err) {
     toast.error(err.response?.data?.msg || 'Something went wrong');
     setError(err.response?.data?.msg || 'Something went wrong');
@@ -62,7 +62,7 @@ const Register = () => {
 
         <button type="submit">Register</button>
         <p className="login-hint">
-          Already have an account? <Link to="/login" className="forgot-link">Login</Link>
+          Already have an account? <Link to="/" className="forgot-link">Login</Link>
         </p>
       </form>
     </div>

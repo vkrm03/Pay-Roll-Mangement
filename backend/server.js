@@ -59,6 +59,7 @@
       if (!user) return res.status(404).json({ msg: "User not found" });
 
       const isMatch = await bcrypt.compare(password, user.password);
+        
       if (!isMatch) return res.status(401).json({ msg: "Invalid credentials" });
 
       const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '2h' });
@@ -82,7 +83,7 @@
       return res.status(404).json({ msg: 'User with this email does not exist' });
     }
 
-    console.log(`🔗 Reset link sent to: ${email}`);
+    console.log(`Reset link sent to: ${email}`);
     res.status(200).json({ msg: 'Password reset link sent to your email' });
   });
 

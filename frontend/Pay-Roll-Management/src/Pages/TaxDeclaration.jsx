@@ -3,7 +3,6 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import '../../public/styles/tax.css';
 
 const TaxDeclarationForm = ({ empId }) => {
   const year = new Date().getFullYear();

@@ -31,7 +31,7 @@ const Login = () => {
       window.dispatchEvent(new Event("userChanged"));
 
       toast.success('Login successful!');
-      navigate(`/${res.data.role}`);
+      navigate("/dashboard"); 
     } catch (err) {
       toast.error(err.response?.data?.msg || 'Login failed');
       setError(err.response?.data?.msg || 'Login failed');
