@@ -35,6 +35,59 @@
   };
 
 
+
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) return res.status(401).json({ msg: 'No token provided' });
+
+  const token = authHeader.split(' ')[1];
+  if (!token) return res.status(401).json({ msg: 'Invalid token format' });
+
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    if (err) return res.status(403).json({ msg: 'Invalid/Expired token' });
+    req.user = decoded; // should contain at least user ID or email
+    next();
+  });
+};
+
+app.post('/api/update_user', authenticateToken, express.urlencoded({ extended: true }), async (req, res) => {
+  try {
+    const { email, phone, password } = req.body;
+    console.log("Update Payload:", req.body);
+
+    const user = await User.findById(req.user.id);
+    console.log(user);
+    
+    if (!user) return res.status(404).json({ msg: 'User not found' });
+
+    const prevEmail = user.email;
+
+    if (email) user.email = email;
+    if (phone) user.phone = phone;
+    if (password) user.password = await bcrypt.hash(password, 10);
+
+    await user.save();
+    console.log("User updated:", user.email);
+
+
+    const employee = await Employee.findOne({ email: prevEmail });
+    if (employee) {
+      if (email) employee.email = email;
+      if (phone) employee.phone = phone;
+      await employee.save();
+    }
+
+    res.status(200).json({ msg: 'User profile updated successfully' });
+  } catch (err) {
+    console.error('Update user error:', err);
+    res.status(500).json({ msg: 'Server error during profile update' });
+  }
+});
+
+
+
+
+
   app.post('/api/register', async (req, res) => {
     const { username, email, password, role } = req.body;
     try {
@@ -59,10 +112,15 @@
       if (!user) return res.status(404).json({ msg: "User not found" });
 
       const isMatch = await bcrypt.compare(password, user.password);
-        
+
       if (!isMatch) return res.status(401).json({ msg: "Invalid credentials" });
 
-      const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '2h' });
+      const token = jwt.sign(
+  { id: user._id,role: user.role, email: user.email },
+  JWT_SECRET,
+  { expiresIn: '1d' }
+);
+
 
       res.status(200).json({
         token,
