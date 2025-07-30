@@ -14,6 +14,7 @@ import User from './Pages/User';
 import UserDash from './Pages/UserDash';
 import UserAttendance from './Pages/UserAttendance';
 import Settings from './Pages/Settings';
+import NotFound from './Pages/NotFound';
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -35,6 +36,8 @@ const App = () => {
         <Route path="/user_dash" element={<UserDash />} />
         <Route path="/user_attendance" element={<UserAttendance />} />
         <Route path="/user" element={<User />} />
+
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <ToastContainer position="top-center" autoClose={1000} hideProgressBar={true}/>
     </>

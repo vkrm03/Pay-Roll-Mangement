@@ -30,9 +30,15 @@ const Login = () => {
       localStorage.setItem('username', res.data.username);
       localStorage.setItem('role', res.data.role);
       window.dispatchEvent(new Event("userChanged"));
-
+      const role = res.data.role.toLowerCase();
       toast.success('Login successful!');
-      navigate("/dashboard"); 
+      if (role === 'admin') {
+        navigate('/dashboard');
+      } else if (role === 'employee') {
+        navigate('/user_dash');
+      } else {
+        toast.error('Unknown role. Contact support.');
+  }
     } catch (err) {
       toast.error(err.response?.data?.msg || 'Login failed');
       setError(err.response?.data?.msg || 'Login failed');
