@@ -102,6 +102,19 @@ app.get('/api/attendance/user/summary', authenticateToken, async (req, res) => {
   }
 });
 
+app.post('/ticket', authenticateToken, async (req, res) => {
+  try {
+    const ticket = new SupportTicket({
+      userEmail: req.user.email,
+      ...req.body,
+    });
+    await ticket.save();
+    res.status(201).json({ message: 'Ticket submitted!' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error submitting ticket' });
+  }
+});
+
 
 
 app.get('/api/payroll/user_summary', authenticateToken, async (req, res) => {

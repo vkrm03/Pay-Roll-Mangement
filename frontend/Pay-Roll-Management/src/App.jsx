@@ -13,6 +13,7 @@ import TaxDeclarationForm from './Pages/TaxDeclaration';
 import User from './Pages/User';
 import UserDash from './Pages/UserDash';
 import UserAttendance from './Pages/UserAttendance';
+import SupportPage from './Pages/Support';
 import Settings from './Pages/Settings';
 import NotFound from './Pages/NotFound';
 import { ToastContainer } from 'react-toastify'
@@ -35,6 +36,7 @@ const App = () => {
 
         <Route path="/user_dash" element={<UserDash />} />
         <Route path="/user_attendance" element={<UserAttendance />} />
+        <Route path="/user_support" element={<SupportPage  />} />
         <Route path="/user" element={<User />} />
 
         <Route path="*" element={<NotFound />} />

@@ -65,6 +65,7 @@ const Navbar = () => {
           <li><NavLink to="/user_dash" onClick={toggleMenu}>Dashboard</NavLink></li>
           <li><NavLink to="/user_attendance" onClick={toggleMenu}>My Attendance</NavLink></li>
           <li><NavLink to="/user_payroll" onClick={toggleMenu}>My Payslip</NavLink></li>
+          <li><NavLink to="/user_support" onClick={toggleMenu}>Support</NavLink></li>
           <li><NavLink to="/user" onClick={toggleMenu}>Hi, {user?.split(' ')[0]}</NavLink></li>
           <li>
             <button className="logout-btn" onClick={() => { toggleMenu(); handleLogout(); }}>
