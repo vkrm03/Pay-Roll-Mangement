@@ -6,7 +6,7 @@ const NotFound = () => {
   return (
     <div className="not-found">
       <img
-        src="https://cdn-icons-png.flaticon.com/512/7981/7981311.png"
+        src="../public\imgs\404.png"
         alt="Payroll Illustration"
         className="not-found-image"
       />
