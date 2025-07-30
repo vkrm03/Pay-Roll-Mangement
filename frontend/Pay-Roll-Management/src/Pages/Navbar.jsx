@@ -16,7 +16,7 @@ const Navbar = () => {
     const syncUser = () => {
       const token = localStorage.getItem('token');
       const username = localStorage.getItem('username');
-      const adminFlag = localStorage.getItem('admin') === 'true';
+      const adminFlag = localStorage.getItem('role') === "admin";
       setUser(token && username ? username : null);
       setIsAdmin(adminFlag);
     };
@@ -62,9 +62,9 @@ const Navbar = () => {
     } else {
       return (
         <>
-          <li><NavLink to="/dashboard" onClick={toggleMenu}>Dashboard</NavLink></li>
-          <li><NavLink to="/attendance" onClick={toggleMenu}>My Attendance</NavLink></li>
-          <li><NavLink to="/payroll" onClick={toggleMenu}>My Payslip</NavLink></li>
+          <li><NavLink to="/user_dash" onClick={toggleMenu}>Dashboard</NavLink></li>
+          <li><NavLink to="/user_attendance" onClick={toggleMenu}>My Attendance</NavLink></li>
+          <li><NavLink to="/user_payroll" onClick={toggleMenu}>My Payslip</NavLink></li>
           <li><NavLink to="/user" onClick={toggleMenu}>Hi, {user?.split(' ')[0]}</NavLink></li>
           <li>
             <button className="logout-btn" onClick={() => { toggleMenu(); handleLogout(); }}>

@@ -12,6 +12,7 @@ import PayrollCompute from './Pages/PayrollCompute';
 import TaxDeclarationForm from './Pages/TaxDeclaration';
 import User from './Pages/User';
 import UserDash from './Pages/UserDash';
+import UserAttendance from './Pages/UserAttendance';
 import Settings from './Pages/Settings';
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
@@ -25,12 +26,14 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/user_dash" element={<UserDash />} />
         <Route path="/employees" element={<Employees />} />
         <Route path="/attendance" element={<Attendance />} />
         <Route path="/tax" element={<TaxDeclarationForm />} />
         <Route path="/payroll" element={<PayrollCompute />} />
         <Route path="/settings" element={<Settings />} />
+
+        <Route path="/user_dash" element={<UserDash />} />
+        <Route path="/user_attendance" element={<UserAttendance />} />
         <Route path="/user" element={<User />} />
       </Routes>
       <ToastContainer position="top-center" autoClose={1000} hideProgressBar={true}/>

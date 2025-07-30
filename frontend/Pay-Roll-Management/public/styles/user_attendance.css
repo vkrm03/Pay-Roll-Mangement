@@ -1,0 +1,197 @@
+.user-attendance-container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  font-family: 'Inter', sans-serif;
+  color: #333;
+}
+
+.user-attendance-container h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  color: #2d3748;
+}
+
+/* Summary Cards */
+.summary-cards {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.summary-cards .card {
+  flex: 1;
+  padding: 1rem;
+  border-radius: 12px;
+  text-align: center;
+  background: #f4f4f4;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s;
+  min-width: 180px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.summary-cards .card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.card.present {
+  background: #d1fae5;
+  color: #065f46;
+}
+.card.absent {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.card.percent {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+/* Filters */
+.filters {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.filters input[type="month"] {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.filters button {
+  margin-left: 1rem;
+  padding: 0.5rem 1rem;
+  background: #2f80ed;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.filters button:hover {
+  background: #1e5fd3;
+}
+
+/* Charts */
+.chart-row {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.chart-box {
+  flex: 1;
+  min-width: 280px;
+  padding: 1rem;
+  background: #fafafa;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.chart-box.pie {
+  max-width: 300px;
+}
+
+/* Records Table */
+.records-list {
+  margin-top: 2rem;
+}
+
+.records-list h4 {
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+  color: #374151;
+}
+
+.records-list table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.records-list th,
+.records-list td {
+  padding: 0.9rem 1.2rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.95rem;
+}
+
+.records-list th {
+  background: #f9fafb;
+  font-weight: 700;
+  color: #374151;
+}
+
+.records-list td {
+  color: #4b5563;
+}
+
+.records-list tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+.records-list tr:hover {
+  background: #edf6ff;
+}
+
+/* Badge */
+.attendance-badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.attendance-badge.present {
+  background: #6FCF97;
+  color: #065f46;
+}
+
+.attendance-badge.absent {
+  background: #EB5757;
+  color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .chart-row {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .summary-cards {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filters input[type="month"],
+  .filters button {
+    display: block;
+    margin: 0.5rem auto;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .records-list table th,
+  .records-list table td {
+    font-size: 0.9rem;
+  }
+}

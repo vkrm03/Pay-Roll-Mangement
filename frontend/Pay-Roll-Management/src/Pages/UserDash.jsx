@@ -123,7 +123,7 @@ const UserDash = () => {
 
   return (
     <div className="dashboard-container">
-      <h2>Welcome, {userInfo?.name || 'User'} 👋</h2>
+      <h2>Welcome, {userInfo?.name || 'User'} !!</h2>
 
       <div className="stats-grid">
         <div className="stat-card"><h4>Email</h4><p>{userInfo.email || 'N/A'}</p></div>
@@ -142,21 +142,21 @@ const UserDash = () => {
 
       <div className="charts-grid">
         <div className="chart-card">
-          <h4>Yearly Net Earnings Overview 💰</h4>
+          <h4>Yearly Net Earnings Overview</h4>
           {payrollHistory.length > 0 ? (
             <div style={{ height: '400px', width: '100%' }}><Bar data={netEarningsBarData} /></div>
-          ) : <p>No earnings data to show 🙃</p>}
+          ) : <p>No earnings data to show</p>}
         </div>
 
         <div className="chart-card">
-          <h4>Pay vs Deduction (Monthly) 📊</h4>
+          <h4>Pay vs Deduction (Monthly)</h4>
           {payrollHistory.length > 0 ? (
             <div style={{ height: '400px' }}><Bar data={payVsDeductionData} /></div>
           ) : <p>No data to show</p>}
         </div>
 
         <div className="chart-card">
-          <h4>Last Month Breakdown 🥧</h4>
+          <h4>Last Month Breakdown</h4>
           {payrollHistory.length > 0 ? (
             <div style={{ height: '300px' }}><Pie data={pieData} /></div>
           ) : <p>No data to show</p>}

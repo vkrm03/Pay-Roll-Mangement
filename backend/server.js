@@ -67,6 +67,43 @@ app.get('/api/user', authenticateToken, async (req, res) => {
   }
 });
 
+app.get('/api/attendance/user', authenticateToken, async (req, res) => {
+  try {
+    const userEmail = req.user.email;
+    const employee = await Employee.findOne({ email: userEmail });
+    if (!employee) return res.status(404).json({ message: 'Employee not found' });
+
+    const records = await Attendance.find({ empId: employee.empId }).sort({ date: 1 });
+    res.json(records);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching attendance' });
+  }
+});
+
+app.get('/api/attendance/user/summary', authenticateToken, async (req, res) => {
+  try {
+    const userEmail = req.user.email;
+    
+    const employee = await Employee.findOne({ email: userEmail });
+    if (!employee) return res.status(404).json({ message: 'Employee not found' });
+
+    const records = await Attendance.find({ empId: employee.empId });
+    
+    const total = records.length;
+    const present = records.filter(r => r.status === 'Present').length;
+    const absent = records.filter(r => r.status === 'Absent').length;
+    const percent = total ? Math.round((present / total) * 100) : 0;
+
+    res.json({ total, present, absent, percent });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error computing summary' });
+  }
+});
+
+
+
 app.get('/api/payroll/user_summary', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
