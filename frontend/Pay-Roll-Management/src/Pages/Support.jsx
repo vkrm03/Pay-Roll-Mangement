@@ -92,7 +92,7 @@ const SupportPage = () => {
       <div className="ticket-history">
         <h4>My Tickets</h4>
         {myTickets.length === 0 ? (
-          <p>No previous tickets found.</p>
+          <p style={{textAlign: "center"}}>No previous tickets found.</p>
         ) : (
           <ul>
             {myTickets.map((t, i) => (

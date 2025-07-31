@@ -14,7 +14,7 @@ import User from './Pages/User';
 import UserDash from './Pages/UserDash';
 import UserAttendance from './Pages/UserAttendance';
 import SupportPage from './Pages/Support';
-import Settings from './Pages/Settings';
+import AdminSupport from './Pages/AdminSupport';
 import NotFound from './Pages/NotFound';
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
@@ -32,7 +32,7 @@ const App = () => {
         <Route path="/attendance" element={<Attendance />} />
         <Route path="/tax" element={<TaxDeclarationForm />} />
         <Route path="/payroll" element={<PayrollCompute />} />
-        <Route path="/settings" element={<Settings />} />
+        <Route path="/admin_support" element={<AdminSupport />} />
 
         <Route path="/user_dash" element={<UserDash />} />
         <Route path="/user_attendance" element={<UserAttendance />} />

@@ -104,8 +104,6 @@ app.get('/api/attendance/user/summary', authenticateToken, async (req, res) => {
 });
 
 
-
-
 app.post('/api/support/ticket', authenticateToken, async (req, res) => {
   try {
     const { subject, category, message } = req.body;
@@ -131,6 +129,31 @@ app.get('/api/support/mytickets', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+
+app.get('/api/adminsupport', authenticateToken, async (req, res) => {
+  try {
+    const tickets = await SupportTicket.find().sort({ createdAt: -1 });
+    res.json(tickets);
+  } catch (err) {
+    res.status(500).json({ error: 'Server error while fetching tickets' });
+  }
+});
+
+app.put('/api/adminsupport/:id', authenticateToken, async (req, res) => {
+  const { status } = req.body;
+  try {
+    const updated = await SupportTicket.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update ticket status' });
+  }
+});
+
 
 
 

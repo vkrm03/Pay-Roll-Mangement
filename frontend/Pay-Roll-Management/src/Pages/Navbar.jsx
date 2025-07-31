@@ -50,7 +50,7 @@ const Navbar = () => {
           <li><NavLink to="/employees" onClick={toggleMenu}>Employees</NavLink></li>
           <li><NavLink to="/attendance" onClick={toggleMenu}>Attendance</NavLink></li>
           <li><NavLink to="/payroll" onClick={toggleMenu}>Payroll</NavLink></li>
-          <li><NavLink to="/settings" onClick={toggleMenu}>Settings</NavLink></li>
+          <li><NavLink to="/admin_support" onClick={toggleMenu}>Support</NavLink></li>
           <li><NavLink to="/admin" onClick={toggleMenu}>Hi, Admin</NavLink></li>
           <li>
             <button className="logout-btn" onClick={() => { toggleMenu(); handleLogout(); }}>
