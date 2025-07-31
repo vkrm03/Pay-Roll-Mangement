@@ -109,7 +109,6 @@ app.get('/api/attendance/user/summary', authenticateToken, async (req, res) => {
 app.post('/api/support/ticket', authenticateToken, async (req, res) => {
   try {
     const { subject, category, message } = req.body;
-    console.log(subject);
     
     const userEmail = req.user.email;
     if (!subject || !message) {
