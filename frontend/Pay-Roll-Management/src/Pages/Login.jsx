@@ -34,7 +34,7 @@ const Login = () => {
       toast.success('Login successful!');
       if (role === 'admin') {
         navigate('/dashboard');
-      } else if (role === 'employee') {
+      } else if (role === 'employee' || role === 'hr') {
         navigate('/user_dash');
       } else {
         toast.error('Unknown role. Contact support.');

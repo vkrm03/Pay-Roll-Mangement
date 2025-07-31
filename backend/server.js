@@ -8,6 +8,7 @@
   const Attendance = require('./models/Attendance');
   const Payroll = require('./models/Payroll');
   const TaxDeclaration = require('./models/TaxDeclaration');
+  const SupportTicket = require('./models/SupportTicket')
   const multer = require('multer');
   const csv = require('csv-parser');
   const fs = require('fs');
@@ -102,16 +103,33 @@ app.get('/api/attendance/user/summary', authenticateToken, async (req, res) => {
   }
 });
 
-app.post('/ticket', authenticateToken, async (req, res) => {
+
+
+
+app.post('/api/support/ticket', authenticateToken, async (req, res) => {
   try {
-    const ticket = new SupportTicket({
-      userEmail: req.user.email,
-      ...req.body,
-    });
-    await ticket.save();
-    res.status(201).json({ message: 'Ticket submitted!' });
+    const { subject, category, message } = req.body;
+    console.log(subject);
+    
+    const userEmail = req.user.email;
+    if (!subject || !message) {
+      return res.status(400).json({ error: 'Subject and message are required' });
+    }
+    const newTicket = new SupportTicket({ userEmail, subject, category, message });
+    await newTicket.save();
+    res.status(201).json({ message: 'Ticket submitted' });
   } catch (err) {
-    res.status(500).json({ message: 'Error submitting ticket' });
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.get('/api/support/mytickets', authenticateToken, async (req, res) => {
+  try {
+    const tickets = await SupportTicket.find({ userEmail: req.user.email }).sort({ createdAt: -1 });
+    res.json(tickets);
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
   }
 });
 

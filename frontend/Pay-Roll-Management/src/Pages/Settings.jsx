@@ -31,7 +31,6 @@ const Settings = ({ user }) => {
   };
 
   const handleSubmit = () => {
-    // axios.post('/api/settings', { policy, accessControl });
     toast.success("Settings updated successfully");
   };
 
