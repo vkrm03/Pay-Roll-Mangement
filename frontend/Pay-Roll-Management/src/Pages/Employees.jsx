@@ -160,7 +160,6 @@ const Employees = () => {
         </button>
       </div>
 
-      {/* 📋 Employees Table */}
       {loading ? (
         <p>Loading employees...</p>
       ) : (
@@ -210,7 +209,6 @@ const Employees = () => {
         </div>
       )}
 
-      {/* 🧾 Modal Form */}
       {showModal && (
         <div className="modal-backdrop">
           <div className="modal">

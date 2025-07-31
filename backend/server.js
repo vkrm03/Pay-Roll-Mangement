@@ -133,7 +133,7 @@ app.get('/api/support/mytickets', authenticateToken, async (req, res) => {
 
 app.get('/api/adminsupport', authenticateToken, async (req, res) => {
   try {
-    const tickets = await SupportTicket.find().sort({ createdAt: -1 });
+    const tickets = await SupportTicket.find().sort({ createdAt: -1 });    
     res.json(tickets);
   } catch (err) {
     res.status(500).json({ error: 'Server error while fetching tickets' });

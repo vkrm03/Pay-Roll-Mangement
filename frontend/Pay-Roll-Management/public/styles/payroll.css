@@ -420,7 +420,6 @@
   background: #e0e0e0;
 }
 
-/* === Animations === */
 @keyframes fadeInBackdrop {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -439,7 +438,7 @@
     overflow-x: auto;
     white-space: nowrap;
     width: 100%;
-    -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
   }
 
   thead, tbody, tr, th, td {

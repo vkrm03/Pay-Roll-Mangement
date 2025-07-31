@@ -11,7 +11,7 @@ const AdminSupport = () => {
 
   const fetchTickets = async () => {
     try {
-      const res = await axios.get(`${api}/adminsupport`, {
+      const res = await axios.get(`${api}adminsupport`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTickets(res.data || []);
@@ -23,7 +23,7 @@ const AdminSupport = () => {
 
   const updateTicketStatus = async (id, newStatus) => {
     try {
-      await axios.put(`${api}support/adminsupport/${id}`, { status: newStatus }, {
+      await axios.put(`${api}adminsupport/${id}`, { status: newStatus }, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success("Status updated");

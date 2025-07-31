@@ -45,7 +45,6 @@
   background-color: #1e60c7;
 }
 
-/* Responsive */
 @media (max-width: 600px) {
   .not-found h1 {
     font-size: 4rem;
