@@ -9,7 +9,7 @@ const UserPayroll = () => {
   const fetchPayroll = async () => {
     try {
       const token = localStorage.getItem('token');
-      const email = localStorage.getItem('username'); // assuming this is stored
+      const email = localStorage.getItem('username');
 
       const res = await axios.get(`http://localhost:5000/api/payroll/user?email=${email}`, {
         headers: { Authorization: `Bearer ${token}` },

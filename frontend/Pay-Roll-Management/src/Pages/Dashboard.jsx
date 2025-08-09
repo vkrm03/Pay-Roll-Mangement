@@ -125,10 +125,10 @@ const Dashboard = () => {
 
         <div className="chart-card">
           <h4>Dept. Distribution</h4>
-          <Pie data={departmentPieData} />
+          <Pie data={departmentPieData}/>
         </div>
 
-        <div className="chart-card-full">
+        <div className="chart-card">
           <h4>Monthly Payroll Trend</h4>
           <Line data={lineData} />
         </div>
