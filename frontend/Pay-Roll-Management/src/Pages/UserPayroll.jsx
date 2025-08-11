@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import api from '../../public/api';
-import '../../public/styles/user_payroll.css';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import api from "../../public/api";
+import "../../public/styles/user_payroll.css";
 
 const UserPayroll = () => {
   const [payrollData, setPayrollData] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const token = localStorage.getItem("token");
+  const empId = localStorage.getItem("u_id"); // Assuming this is empId
+
+  // Fetch payroll data
   const fetchPayroll = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const u_id = localStorage.getItem('u_id');
-
-      const res = await axios.get(`${api}payroll/user?usr_id=${u_id}`, {
+      const res = await axios.get(`${api}payroll/user?usr_id=${empId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       setPayrollData(res.data);
     } catch (error) {
       console.error("Payroll fetch error: ", error);
@@ -24,23 +24,24 @@ const UserPayroll = () => {
     }
   };
 
-  const handleDownload = (month, year) => {
-    const token = localStorage.getItem('token');
-    const u_id = localStorage.getItem('u_id');
+  const handleDownload = async (endpoint, filename) => {
+    try {
+      console.log(`${api}${endpoint}`);
+      const res = await axios.get(`${api}${endpoint}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: "blob",
+      });
 
-    axios.get(`${api}payroll/download?usr_id=${u_id}&month=${month}&year=${year}`, {
-      headers: { Authorization: `Bearer ${token}` },
-      responseType: 'blob', // Important for file downloads
-    })
-    .then((res) => {
       const url = window.URL.createObjectURL(new Blob([res.data]));
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', `Payslip_${month}_${year}.pdf`);
+      link.setAttribute("download", filename);
       document.body.appendChild(link);
       link.click();
-    })
-    .catch(err => console.error("Download error: ", err));
+      link.remove();
+    } catch (err) {
+      console.error("Download error: ", err);
+    }
   };
 
   useEffect(() => {
@@ -59,13 +60,23 @@ const UserPayroll = () => {
           {payrollData.map((item, idx) => (
             <div key={idx} className="payroll-card">
               <div className="card-header">
-                <h3>{item.month}/{item.year}</h3>
-                <button 
-                  className="download-btn"
-                  onClick={() => handleDownload(item.month, item.year)}
-                >
-                  Download
-                </button>
+                <h3>
+                  {item.month}/{item.year}
+                </h3>
+                <div className="action-buttons">
+                    <button
+    className="download-btn"
+    onClick={() =>
+      handleDownload(
+        `download-form16?userId=${empId}&month=${item.month}&year=${item.year}`,
+        `Form16_${item.month}_${item.year}.pdf`
+      )
+    }
+  >
+    Download Form 16
+  </button>
+
+                </div>
               </div>
               <div className="card-body">
                 <p><strong>Basic Pay:</strong> ₹{item.basic}</p>
