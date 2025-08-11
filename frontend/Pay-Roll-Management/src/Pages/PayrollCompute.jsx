@@ -17,6 +17,7 @@ const Payroll = () => {
   const [bulkModal, setBulkModal] = useState(false);
   const [csvFile, setCsvFile] = useState(null);
   const [sortType, setSortType] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(() => {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -107,20 +108,19 @@ const handleBulkPayrollUpload = async () => {
     toast.error("Please select a CSV file");
     return;
   }
-
   if (!bulkMonth) {
     toast.error("Please select a Month");
     return;
   }
 
   const [year, month] = bulkMonth.split("-");
-
   const formData = new FormData();
   formData.append('file', csvFile);
   formData.append('year', year);
   formData.append('month', month);
 
   try {
+    setIsLoading(true);
     await axios.post(`${api}payroll/bulk`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
@@ -129,8 +129,11 @@ const handleBulkPayrollUpload = async () => {
     fetchMergedPayroll();
   } catch (err) {
     toast.error("Error uploading bulk payroll");
+  } finally {
+    setIsLoading(false);
   }
 };
+
 
 
   const filtered = payrolls.filter(p =>
@@ -167,6 +170,14 @@ const handleBulkPayrollUpload = async () => {
     link.click();
     URL.revokeObjectURL(url);
   };
+
+  const LoadingOverlay = () => (
+  <div className="loading-overlay">
+    <div className="loading-spinner"></div>
+    <p>Computing payroll and senting emails... please wait...</p>
+  </div>
+);
+
 
   return (
     <div className="payroll-container">
@@ -238,6 +249,7 @@ const handleBulkPayrollUpload = async () => {
 
 {bulkModal && (
   <div className="bulk-modal-backdrop" onClick={() => setBulkModal(false)}>
+    {isLoading && <LoadingOverlay />}
     <div className="bulk-modal" onClick={e => e.stopPropagation()}>
       <h3>Bulk Payroll Computation</h3>
       <input

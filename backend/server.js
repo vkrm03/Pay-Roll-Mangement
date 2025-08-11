@@ -11,6 +11,7 @@
   const SupportTicket = require('./models/SupportTicket');
   const PDFDocument = require("pdfkit");
   const multer = require('multer');
+  const nodemailer = require('nodemailer')
   const csv = require('csv-parser');
   const fs = require('fs');
   const path = require('path');
@@ -24,6 +25,15 @@
   app.use(express.json());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+
+
+  const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'vkrmtemp@gmail.com',
+    pass: "mysp eskk wgqz dwio",
+  },
+});
 
 
   mongoose.connect('mongodb://localhost:27017/payroll_app', {
@@ -142,7 +152,6 @@ app.get('/api/payroll/user', authenticateToken, async (req, res) => {
 app.get("/api/download-form16", async (req, res) => {
   try {
     const { userId, month, year } = req.query;
-    
 
     const usr = await User.findById(userId);
 
@@ -843,34 +852,86 @@ app.post('/api/payroll/bulk', upload.single('file'), async (req, res) => {
         }
       })
       .on('end', async () => {
-  for (const row of results) {
-    const emp = await Employee.findOne({ empId: row.empId });
-    if (!emp) continue;
+        for (const row of results) {
+          const emp = await Employee.findOne({ empId: row.empId });
+          if (!emp) continue;
 
-    await Payroll.findOneAndUpdate(
-      { empId: emp.empId, month, year },
-      {
-        name: emp.name,
-        empId: emp.empId,
-        basic: row.basic,
-        allowance: row.allowance,
-        deduction: row.deduction,
-        gross: row.gross,
-        net: row.net,
-        month,
-        year
-      },
-      { upsert: true, new: true }
-    );
 
-    emp.salary = row.net;
-    await emp.save();
-  }
+          await Payroll.findOneAndUpdate(
+            { empId: emp.empId, month, year },
+            {
+              name: emp.name,
+              empId: emp.empId,
+              basic: row.basic,
+              allowance: row.allowance,
+              deduction: row.deduction,
+              gross: row.gross,
+              net: row.net,
+              month,
+              year
+            },
+            { upsert: true, new: true }
+          );
 
-  fs.unlinkSync(filePath);
-  res.status(201).json({ msg: "Bulk payroll processed & salaries updated" });
-});
+          emp.salary = row.net;
+          await emp.save();
 
+          const pdfBuffer = await new Promise((resolve) => {
+            const doc = new PDFDocument();
+            const chunks = [];
+
+            doc.on('data', chunks.push.bind(chunks));
+            doc.on('end', () => {
+              resolve(Buffer.concat(chunks));
+            });
+
+            doc.fontSize(18).fillColor("#2E86C1").text("FORM NO. 16", { align: "center" });
+            doc.moveDown(0.5);
+            doc.fontSize(12).fillColor("black").text("Certificate under section 203 of the Income-tax Act, 1961", { align: "center" });
+            doc.moveDown(2);
+
+            doc.fontSize(12).text(`Employer: DataSkience (OPC) Private Limited`);
+            doc.text(`Employee Name: ${emp.name}`);
+            doc.text(`Employee Email: ${emp.email}`);
+            doc.text(`Role: ${emp.role}`);
+            doc.text(`Department: ${emp.department || "-"}`);
+            doc.text(`Designation: ${emp.designation || "-"}`);
+            doc.text(`Joining Date: ${emp.joinDate ? emp.joinDate.toDateString() : "-"}`);
+            doc.moveDown();
+
+            doc.fontSize(12).fillColor("#1F618D").text("Salary Details", { underline: true });
+            doc.fillColor("black").text(`Basic Pay: ${row.basic} /-`);
+            doc.text(`Allowance: ${row.allowance} /-`);
+            doc.text(`Deductions: ${row.deduction} /-`);
+            doc.text(`Gross Salary: ${row.gross} /-`);
+            doc.text(`Net Salary: ${row.net} /-`);
+            doc.moveDown(2);
+
+            doc.text("Certification:", { underline: true });
+            doc.text(`Certified that the above-mentioned salary details are accurate as per company records.`);
+
+            doc.end();
+          });
+
+          await transporter.sendMail({
+            from: '"Payroll Dept" <vkrmtemp@gmail.com>',
+            to: emp.email,
+            subject: `Form 16 - ${month}/${year}`,
+            text: `Hello ${emp.name},\n\nPlease find attached your Form 16 for ${month}/${year}.\n\nRegards,\nPayroll Department`,
+            attachments: [
+              {
+                filename: `Form16_${month}_${year}.pdf`,
+                content: pdfBuffer
+              }
+            ]
+          });
+
+          console.log(`Sent Form 16 to ${emp.email}`);
+        }
+
+        fs.unlinkSync(filePath);
+        res.status(201).json({ msg: "Bulk payroll processed & emails sent" });
+      });
 
   } catch (err) {
     console.error("Bulk Payroll Upload Error:", err);

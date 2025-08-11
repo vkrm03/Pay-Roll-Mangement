@@ -8,9 +8,8 @@ const UserPayroll = () => {
   const [loading, setLoading] = useState(true);
 
   const token = localStorage.getItem("token");
-  const empId = localStorage.getItem("u_id"); // Assuming this is empId
+  const empId = localStorage.getItem("u_id");
 
-  // Fetch payroll data
   const fetchPayroll = async () => {
     try {
       const res = await axios.get(`${api}payroll/user?usr_id=${empId}`, {
