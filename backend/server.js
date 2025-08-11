@@ -104,6 +104,40 @@ app.get('/api/attendance/user/summary', authenticateToken, async (req, res) => {
 });
 
 
+app.get('/api/payroll/user', authenticateToken, async (req, res) => {
+  try {
+    const usr_id = req.query.usr_id;
+
+    if (!usr_id) {
+      return res.status(400).json({ message: "usr_id is required" });
+    }
+
+    const user = await User.findById(usr_id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const employee = await Employee.findOne({ email: user.email });
+    if (!employee) {
+      return res.status(404).json({ message: "No employee record found for this user" });
+    }
+
+    const payrollData = await Payroll.find({ empId: employee.empId });
+    if (!payrollData || payrollData.length === 0) {
+      return res.status(404).json({ message: "No payroll data found" });
+    }
+
+    res.json(payrollData);
+    console.log(payrollData);
+    
+  } catch (err) {
+    console.error("Error fetching payroll:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+
 app.post('/api/support/ticket', authenticateToken, async (req, res) => {
   try {
     const { subject, category, message } = req.body;
