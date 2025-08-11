@@ -156,6 +156,36 @@ app.put('/api/adminsupport/:id', authenticateToken, async (req, res) => {
 
 
 
+app.put("/api/admin/update", async (req, res) => {
+  try {
+    const { email, password, confirmPassword } = req.body;
+
+    if (password && password !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
+    }
+
+    const admin = await User.findOne({ username: "Admin" });
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+    admin.email = email;
+
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      admin.password = hashedPassword;
+    }
+
+    await admin.save();
+
+    res.json({ message: "Admin profile updated successfully" });
+  } catch (error) {
+    console.error("Error updating admin:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+
 
 app.get('/api/payroll/user_summary', authenticateToken, async (req, res) => {
   try {

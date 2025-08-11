@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import api from '../../public/api';
 import '../../public/styles/user_payroll.css';
 
 const UserPayroll = () => {
@@ -11,7 +12,7 @@ const UserPayroll = () => {
       const token = localStorage.getItem('token');
       const email = localStorage.getItem('username');
 
-      const res = await axios.get(`http://localhost:5000/api/payroll/user?email=${email}`, {
+      const res = await axios.get(`${api}payroll/user?email=${email}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
