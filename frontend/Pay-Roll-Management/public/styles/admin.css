@@ -78,7 +78,6 @@ input:focus {
   transform: translateY(-2px);
 }
 
-/* Responsive */
 @media (max-width: 600px) {
   form {
     flex-direction: column;

@@ -166,7 +166,8 @@ const handleBulkPayrollUpload = async () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = "payroll.csv";
+    const [year, month] = selectedMonth.split("-");
+    link.download = `${month}_${year}_payroll.csv`;
     link.click();
     URL.revokeObjectURL(url);
   };
