@@ -4,6 +4,7 @@ import "../public/styles/index.css"
 import Navbar from './Pages/Navbar';
 import Login from './Pages/Login';
 import ForgotPassword from './Pages/ForgotPwd';
+import ResetPassword from './Pages/ResetPassword';
 import Dashboard from './Pages/Dashboard';
 import Employees from './Pages/Employees';
 import Attendance from './Pages/Attendance';
@@ -29,6 +30,7 @@ const App = () => {
         <Route path="/home" element={<HomePage />} />
         <Route path="/" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/employees" element={<Employees />} />
         <Route path="/attendance" element={<Attendance />} />

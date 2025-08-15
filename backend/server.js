@@ -9,6 +9,8 @@
   const Payroll = require('./models/Payroll');
   const TaxDeclaration = require('./models/TaxDeclaration');
   const SupportTicket = require('./models/SupportTicket');
+  const PasswordResetToken = require('./models/PasswordResetToken');
+  const crypto = require('crypto');
   const PDFDocument = require("pdfkit");
   const multer = require('multer');
   const nodemailer = require('nodemailer')
@@ -450,17 +452,73 @@ app.post('/api/register', async (req, res) => {
     }
   });
 
-  app.post('/api/forgot-password', async (req, res) => {
-    const { email } = req.body;
-    const user = await User.findOne({ email });
+app.post('/api/forgot-password', async (req, res) => {
+  const { email } = req.body;
 
+  try {
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ msg: 'User with this email does not exist' });
     }
 
+    const token = crypto.randomBytes(32).toString('hex');
+
+    await PasswordResetToken.create({
+      userId: user._id,
+      token,
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000)
+    });
+
+    const resetLink = `http://localhost:5173/reset-password/${token}`;
+
+    await transporter.sendMail({
+      from: '"Payroll System" <your-email@gmail.com>',
+      to: email,
+      subject: 'Password Reset Request',
+      html: `
+        <p>Hello ${user.username},</p>
+        <p>You requested a password reset. Click the link below to reset it:</p>
+        <a href="${resetLink}">${resetLink}</a>
+        <p>This link will expire in 15 minutes.</p>
+      `
+    });
+
     console.log(`Reset link sent to: ${email}`);
     res.status(200).json({ msg: 'Password reset link sent to your email' });
-  });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+});
+
+app.post('/api/reset-password/:token', async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  try {
+    const resetToken = await PasswordResetToken.findOne({ token });
+    if (!resetToken) return res.status(400).json({ msg: 'Invalid or expired token' });
+
+    if (resetToken.expiresAt < Date.now()) {
+      await PasswordResetToken.deleteOne({ token });
+      return res.status(400).json({ msg: 'Token expired' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await User.findByIdAndUpdate(resetToken.userId, { password: hashedPassword });
+
+    await PasswordResetToken.deleteOne({ token });
+
+    res.json({ msg: 'Password reset successful' });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+});
+
+
 
   app.post('/api/employees/add', async (req, res) => {
     try {
