@@ -3,7 +3,6 @@ import { Routes, Route } from 'react-router-dom';
 import "../public/styles/index.css"
 import Navbar from './Pages/Navbar';
 import Login from './Pages/Login';
-import Register from './Pages/Register';
 import ForgotPassword from './Pages/ForgotPwd';
 import Dashboard from './Pages/Dashboard';
 import Employees from './Pages/Employees';
@@ -18,6 +17,7 @@ import UserPayroll from './Pages/UserPayroll';
 import AdminSupport from './Pages/AdminSupport';
 import Admin from './Pages/Admin';
 import NotFound from './Pages/NotFound';
+import HomePage from './Pages/HomePage';
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -26,9 +26,9 @@ const App = () => {
     <>
       <Navbar />
       <Routes>
+        <Route path="/home" element={<HomePage />} />
         <Route path="/" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/employees" element={<Employees />} />
         <Route path="/attendance" element={<Attendance />} />

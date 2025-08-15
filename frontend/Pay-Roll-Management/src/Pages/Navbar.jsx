@@ -37,7 +37,7 @@ const Navbar = () => {
     if (!user) {
       return (
         <>
-          <li><NavLink to="/register" onClick={toggleMenu}>Register</NavLink></li>
+          <li><NavLink to="/home" onClick={toggleMenu}>Home</NavLink></li>
           <li><NavLink to="/" onClick={toggleMenu}>Login</NavLink></li>
         </>
       );
