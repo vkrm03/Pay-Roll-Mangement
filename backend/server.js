@@ -17,11 +17,14 @@
   const csv = require('csv-parser');
   const fs = require('fs');
   const path = require('path');
+  const dotenv = require('dotenv');
 
   const app = express();
   const PORT = 5000;
   const JWT_SECRET = 'payroll_secret_token';
   const upload = multer({ dest: 'uploads/' });
+  
+  dotenv.config();
 
   app.use(cors());
   app.use(express.json());
@@ -33,7 +36,7 @@
   service: 'gmail',
   auth: {
     user: 'vkrmtemp@gmail.com',
-    pass: "mysp eskk wgqz dwio",
+    pass: process.env.Mail_Pass,
   },
 });
 
